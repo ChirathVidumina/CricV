@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     SafeAreaView,
     KeyboardAvoidingView,
@@ -10,9 +10,13 @@ import {
     StyleSheet,
     Platform,
     StatusBar,
+    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme, ThemeColors } from './ThemeContext';
+
+export const PLAYER_PROFILE_STORAGE_KEY = 'player_profile_data';
 
 interface PlayerProfileScreenProps {
     initialData?: any;
@@ -25,18 +29,48 @@ export default function PlayerProfileScreen({
     onSaveProfile,
     navigation,
 }: PlayerProfileScreenProps) {
-  const { colors, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+    const { colors, isDark } = useTheme();
+    const styles = useMemo(() => createStyles(colors), [colors]);
+
     const [fullName, setFullName] = useState(initialData?.fullName || '');
     const [displayName, setDisplayName] = useState(initialData?.displayName || '');
-    
     const [playingRole, setPlayingRole] = useState(initialData?.playingRole || 'Batter');
     const [battingHand, setBattingHand] = useState(initialData?.battingHand || 'Right Handed');
     const [bowlingStyle, setBowlingStyle] = useState(initialData?.bowlingStyle || 'None');
     const [bowlingArm, setBowlingArm] = useState(initialData?.bowlingArm || '');
     const [spinType, setSpinType] = useState(initialData?.spinType || '');
 
-    const handleSave = () => {
+    const [isLoadedFromStorage, setIsLoadedFromStorage] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // 1. On Component Mount: Load profile from AsyncStorage if available
+    useEffect(() => {
+        const loadProfileFromStorage = async () => {
+            try {
+                const storedProfile = await AsyncStorage.getItem(PLAYER_PROFILE_STORAGE_KEY);
+                if (storedProfile) {
+                    const parsed = JSON.parse(storedProfile);
+                    if (parsed.fullName) setFullName(parsed.fullName);
+                    if (parsed.displayName) setDisplayName(parsed.displayName);
+                    if (parsed.playingRole) setPlayingRole(parsed.playingRole);
+                    if (parsed.battingHand) setBattingHand(parsed.battingHand);
+                    if (parsed.bowlingStyle) setBowlingStyle(parsed.bowlingStyle);
+                    if (parsed.bowlingArm) setBowlingArm(parsed.bowlingArm);
+                    if (parsed.spinType) setSpinType(parsed.spinType);
+                    setIsLoadedFromStorage(true);
+                }
+            } catch (error) {
+                console.error('Failed to load profile from storage:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadProfileFromStorage();
+    }, []);
+
+    // 2. On Save Action: Save profile data to AsyncStorage
+    const handleSave = async () => {
         const data = {
             fullName: fullName.trim() || 'Player',
             displayName: displayName.trim() || fullName.trim() || 'Player',
@@ -45,13 +79,34 @@ export default function PlayerProfileScreen({
             bowlingStyle,
             bowlingArm: (bowlingStyle === 'Fast' || bowlingStyle === 'Medium Fast') ? bowlingArm : '',
             spinType: bowlingStyle === 'Spin' ? spinType : '',
+            updatedAt: new Date().toISOString(),
         };
 
-        if (onSaveProfile) {
-            onSaveProfile(data);
-        }
-        if (navigation?.navigate) {
-            navigation.navigate('MyStatsScreen');
+        try {
+            await AsyncStorage.setItem(PLAYER_PROFILE_STORAGE_KEY, JSON.stringify(data));
+            setIsLoadedFromStorage(true);
+
+            if (onSaveProfile) {
+                onSaveProfile(data);
+            }
+
+            Alert.alert(
+                'Profile Saved',
+                'Your player profile has been saved successfully!',
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            if (navigation?.navigate) {
+                                navigation.navigate('MyStatsScreen');
+                            }
+                        },
+                    },
+                ]
+            );
+        } catch (error) {
+            console.error('Failed to save profile to storage:', error);
+            Alert.alert('Error', 'Failed to save profile. Please try again.');
         }
     };
 
@@ -78,7 +133,7 @@ export default function PlayerProfileScreen({
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle={colors.statusBar} backgroundColor={colors.background} />
-            
+
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.headerTitleRow}>
@@ -97,6 +152,14 @@ export default function PlayerProfileScreen({
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
+                    {/* Visual Feedback Banner: Saved Profile Loaded */}
+                    {isLoadedFromStorage && (
+                        <View style={styles.loadedBanner}>
+                            <Ionicons name="checkmark-circle" size={18} color="#10B981" style={{ marginRight: 8 }} />
+                            <Text style={styles.loadedBannerText}>Saved profile loaded from storage</Text>
+                        </View>
+                    )}
+
                     {/* Main Card Container */}
                     <View style={styles.card}>
                         <Text style={styles.cardHeaderTitle}>Personal Information</Text>
@@ -109,7 +172,7 @@ export default function PlayerProfileScreen({
                                 value={fullName}
                                 onChangeText={setFullName}
                                 placeholder="Enter your full name"
-                                placeholderTextColor="#9CA3AF"
+                                placeholderTextColor={colors.inputPlaceholder}
                             />
                         </View>
 
@@ -121,7 +184,7 @@ export default function PlayerProfileScreen({
                                 value={displayName}
                                 onChangeText={setDisplayName}
                                 placeholder="Enter display name (e.g. Sunny)"
-                                placeholderTextColor="#9CA3AF"
+                                placeholderTextColor={colors.inputPlaceholder}
                             />
                         </View>
 
@@ -263,6 +326,7 @@ export default function PlayerProfileScreen({
 
                         {/* Save Profile Button */}
                         <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+                            <Ionicons name="save-outline" size={18} color={colors.background} style={{ marginRight: 6 }} />
                             <Text style={styles.saveBtnText}>Save Profile</Text>
                         </TouchableOpacity>
                     </View>
@@ -279,7 +343,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     },
     header: {
         backgroundColor: colors.background,
-        paddingVertical: 16,
+        paddingVertical: 14,
         paddingHorizontal: 20,
         borderBottomWidth: 1,
         borderBottomColor: colors.divider,
@@ -301,6 +365,22 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     scrollContent: {
         padding: 16,
         paddingBottom: 40,
+    },
+    loadedBanner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(16,185,129,0.1)',
+        borderWidth: 1,
+        borderColor: 'rgba(16,185,129,0.3)',
+        borderRadius: 10,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        marginBottom: 14,
+    },
+    loadedBannerText: {
+        color: '#10B981',
+        fontSize: 13,
+        fontWeight: '600',
     },
     card: {
         backgroundColor: colors.card,
@@ -376,7 +456,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         padding: 14,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: colors.card,
+        borderColor: colors.cardBorder,
     },
     conditionalTitle: {
         fontSize: 13,
@@ -387,7 +467,8 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     saveBtn: {
         backgroundColor: '#10B981',
         borderRadius: 14,
-        paddingVertical: 16,
+        paddingVertical: 14,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 10,
