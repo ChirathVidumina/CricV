@@ -36,6 +36,7 @@ function ProfileFlow({ navigation }: any) {
         <PlayerProfileScreen
           initialData={profileData}
           onSaveProfile={handleSaveProfile}
+          onBack={() => setCurrentView('view-stats')}
           navigation={navigation}
         />
       ) : (
