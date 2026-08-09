@@ -86,23 +86,23 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
 
             <ScrollView style={{ paddingHorizontal: 16, paddingTop: 8 }} showsVerticalScrollIndicator={false}>
                 <Text style={{ color: colors.textMuted, fontWeight: '700', fontSize: 10, letterSpacing: 1, marginBottom: 4, marginTop: 2 }}>TEAMS</Text>
-                <View style={{ backgroundColor: colors.card, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, marginBottom: 10, borderWidth: 1, borderColor: colors.cardBorder }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2 }}>
-                        <Ionicons name="flag-outline" size={16} color={colors.accent} style={{ marginRight: 8 }} />
-                        <TextInput style={{ flex: 1, fontSize: 14, color: colors.textPrimary, paddingVertical: 4 }} placeholder="Host Team" value={hostTeam} onChangeText={setHostTeam} placeholderTextColor={colors.inputPlaceholder} />
+                <View style={{ backgroundColor: colors.card, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8, marginBottom: 12, borderWidth: 1, borderColor: colors.cardBorder }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, minHeight: 44 }}>
+                        <Ionicons name="flag-outline" size={18} color={colors.accent} style={{ marginRight: 10 }} />
+                        <TextInput style={{ flex: 1, fontSize: 15, color: colors.textPrimary, paddingVertical: 6 }} placeholder="Host Team" value={hostTeam} onChangeText={setHostTeam} placeholderTextColor={colors.inputPlaceholder} />
                     </View>
                     <View style={{ height: 1, backgroundColor: colors.divider, marginVertical: 2 }} />
-                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2 }}>
-                        <Ionicons name="airplane-outline" size={16} color={colors.accentBlue} style={{ marginRight: 8 }} />
-                        <TextInput style={{ flex: 1, fontSize: 14, color: colors.textPrimary, paddingVertical: 4 }} placeholder="Visitor Team" value={visitorTeam} onChangeText={setVisitorTeam} placeholderTextColor={colors.inputPlaceholder} />
+                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, minHeight: 44 }}>
+                        <Ionicons name="airplane-outline" size={18} color={colors.accentBlue} style={{ marginRight: 10 }} />
+                        <TextInput style={{ flex: 1, fontSize: 15, color: colors.textPrimary, paddingVertical: 6 }} placeholder="Visitor Team" value={visitorTeam} onChangeText={setVisitorTeam} placeholderTextColor={colors.inputPlaceholder} />
                     </View>
                 </View>
 
                 {/* Toss Won By Section */}
                 <Text style={{ color: colors.textMuted, fontWeight: '700', fontSize: 10, letterSpacing: 1, marginBottom: 4, marginTop: 2 }}>TOSS WON BY</Text>
-                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
                     <TouchableOpacity
-                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 9, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, toss === 'host' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
+                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, toss === 'host' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
                         onPress={() => setToss('host')}
                     >
                         <Text
@@ -114,7 +114,7 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 9, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, toss === 'visitor' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
+                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, toss === 'visitor' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
                         onPress={() => setToss('visitor')}
                     >
                         <Text
@@ -128,9 +128,9 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
 
                 {/* Opted To */}
                 <Text style={{ color: colors.textMuted, fontWeight: '700', fontSize: 10, letterSpacing: 1, marginBottom: 4, marginTop: 2 }}>OPTED TO</Text>
-                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
                     <TouchableOpacity
-                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 9, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, opted === 'bat' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
+                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, opted === 'bat' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
                         onPress={() => setOpted('bat')}
                     >
                         <Ionicons name="baseball-outline" size={15} color={opted === 'bat' ? colors.chipSelectedTextOnAccent : colors.chipUnselectedText} style={{ marginRight: 5 }} />
@@ -140,7 +140,7 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 9, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, opted === 'bowl' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
+                        style={[{ flex: 1, flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, opted === 'bowl' ? { backgroundColor: colors.accent, borderWidth: 1, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderWidth: 1, borderColor: colors.chipUnselectedBorder }]}
                         onPress={() => setOpted('bowl')}
                     >
                         <Ionicons name="ellipse-outline" size={15} color={opted === 'bowl' ? colors.chipSelectedTextOnAccent : colors.chipUnselectedText} style={{ marginRight: 5 }} />
@@ -150,15 +150,26 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
                     </TouchableOpacity>
                 </View>
 
+                {/* Total Overs Section */}
                 <Text style={{ color: colors.textMuted, fontWeight: '700', fontSize: 10, letterSpacing: 1, marginBottom: 4, marginTop: 2 }}>TOTAL OVERS</Text>
-                <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 10, marginBottom: 10, borderWidth: 1, borderColor: colors.cardBorder }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 14, paddingVertical: 2 }}>
-                        <TouchableOpacity style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colors.buttonBg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.cardBorder }} onPress={handleDecrementOvers}>
-                            <Ionicons name="remove" size={16} color={colors.textPrimary} />
+                <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: colors.cardBorder }}>
+                    {/* Centered Manual Edit Row (+ / - buttons close to central TextInput) */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, paddingVertical: 4 }}>
+                        <TouchableOpacity style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.buttonBg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.cardBorder }} onPress={handleDecrementOvers}>
+                            <Ionicons name="remove" size={18} color={colors.textPrimary} />
                         </TouchableOpacity>
 
                         <TextInput
-                            style={{ fontSize: 22, fontWeight: '800', color: colors.textPrimary, minWidth: 50, textAlign: 'center' }}
+                            style={{
+                                fontSize: 26,
+                                fontWeight: '800',
+                                color: colors.textPrimary,
+                                minWidth: 64,
+                                textAlign: 'center',
+                                paddingVertical: 0,
+                                paddingHorizontal: 4,
+                                backgroundColor: 'transparent',
+                            }}
                             value={overs}
                             onChangeText={handleOversChangeText}
                             keyboardType="numeric"
@@ -167,21 +178,22 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
                             selectTextOnFocus
                         />
 
-                        <TouchableOpacity style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colors.buttonBg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.cardBorder }} onPress={handleIncrementOvers}>
-                            <Ionicons name="add" size={16} color={colors.textPrimary} />
+                        <TouchableOpacity style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.buttonBg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.cardBorder }} onPress={handleIncrementOvers}>
+                            <Ionicons name="add" size={18} color={colors.textPrimary} />
                         </TouchableOpacity>
                     </View>
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 8 }}>
+                    {/* Spaced-Out Quick Select Buttons */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 14, marginTop: 10 }}>
                         {[5, 10, 20, 50].map((num) => {
                             const isSelected = (parseInt(overs) || 0) === num;
                             return (
                                 <TouchableOpacity
                                     key={num}
-                                    style={[{ paddingVertical: 5, paddingHorizontal: 14, borderRadius: 16, borderWidth: 1 }, isSelected ? { backgroundColor: colors.accent, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderColor: colors.chipUnselectedBorder }]}
+                                    style={[{ paddingVertical: 6, paddingHorizontal: 16, borderRadius: 16, borderWidth: 1 }, isSelected ? { backgroundColor: colors.accent, borderColor: colors.accent } : { backgroundColor: colors.chipUnselectedBg, borderColor: colors.chipUnselectedBorder }]}
                                     onPress={() => setOvers(num.toString())}
                                 >
-                                    <Text style={[{ fontSize: 12, fontWeight: '600' }, isSelected ? { color: colors.chipSelectedTextOnAccent, fontWeight: '700' } : { color: colors.chipUnselectedText }]}>
+                                    <Text style={[{ fontSize: 13, fontWeight: '600' }, isSelected ? { color: colors.chipSelectedTextOnAccent, fontWeight: '700' } : { color: colors.chipUnselectedText }]}>
                                         {num}
                                     </Text>
                                 </TouchableOpacity>
