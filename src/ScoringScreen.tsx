@@ -734,7 +734,6 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
         updateBowlerHistory(updatedBowler);
 
         const outBatter = wicketOutPlayer === 'striker' ? strikerStats : nonStrikerStats;
-        const notOutBatter = wicketOutPlayer === 'striker' ? nonStrikerStats : strikerStats;
 
         // Record dismissed batter with real-world dismissal string
         setDismissedBatters(prev => [...prev, {
@@ -888,7 +887,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
             setNonStrikerStats(newStriker);
         } else {
             setStrikerStats(newStriker);
-            setNonStrikerStats(newNonStriker);
+            setNonStrikerStats(newStriker);
         }
 
         setBowlerStats(newBowler);
@@ -981,7 +980,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Header with Back Button */}
+            {/* Header with Back & Menu */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleNavigateHome} style={{ paddingVertical: 4, paddingRight: 12 }}>
                     <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
@@ -989,31 +988,22 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                     <Text style={styles.headerTitle}>CricV</Text>
                 </View>
-                <TouchableOpacity onPress={() => setIsScorecardVisible(true)} style={{ padding: 10 }}>
-                    <Ionicons name="menu" size={26} color="white" />
+                <TouchableOpacity onPress={() => setIsScorecardVisible(true)} style={{ padding: 6 }}>
+                    <Ionicons name="menu" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
             </View>
 
-            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+            {/* TOP SECTION: Scrollable Scoreboard & Player Stats */}
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
 
                 {/* SECTION A: Header & Scoreboard */}
                 <View style={styles.headerCard}>
                     <Text style={styles.matchTitle}>{settings?.battingTeam || 'India'} vs {settings?.bowlingTeam || 'Sri Lanka'}</Text>
 
-                    {/* Prominent Current Status / Equation Banner */}
+                    {/* Target / Equation Banner */}
                     {currentInnings === 2 && targetScore !== null && !isMatchOver && (
-                        <View style={{
-                            backgroundColor: colors.accentBg,
-                            borderWidth: 1,
-                            borderColor: 'rgba(16, 185, 129, 0.3)',
-                            borderRadius: 10,
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            marginTop: 8,
-                            marginBottom: 8,
-                            alignItems: 'center'
-                        }}>
-                            <Text style={{ fontSize: 13, fontWeight: '800', color: '#10B981', letterSpacing: 0.3 }}>
+                        <View style={styles.targetBanner}>
+                            <Text style={styles.targetBannerText}>
                                 {battingTeamName} need {Math.max(0, targetScore - teamRuns)} runs in {Math.max(0, (parseInt(settings?.overs || '20') * bpo) - totalBalls)} balls
                             </Text>
                         </View>
@@ -1032,7 +1022,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                         </View>
                         <View style={{ alignItems: 'flex-end' }}>
                             {currentInnings === 2 && targetScore && (
-                                <Text style={{ fontSize: 13, fontWeight: 'bold', color: '#3B82F6', marginBottom: 2 }}>Target: {targetScore}</Text>
+                                <Text style={styles.targetText}>Target: {targetScore}</Text>
                             )}
                             <Text style={styles.oversText}>
                                 Overs: <Text style={styles.oversHighlight}>{overs}.{currentBalls}</Text> / {settings?.overs || 20}
@@ -1043,16 +1033,16 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     <View style={styles.statsBar}>
                         <Text style={styles.statsText}>CRR: <Text style={styles.statsBold}>{crr}</Text></Text>
                         <Text style={styles.statsText}>
-                            Extras: <Text style={styles.statsBold}>{extrasStats.total}</Text> (W: {extrasStats.WD}, NB: {extrasStats.NB}, B: {extrasStats.BYE}, LB: {extrasStats.LB})
+                            Extras: <Text style={styles.statsBold}>{extrasStats.total}</Text> (W:{extrasStats.WD}, NB:{extrasStats.NB}, B:{extrasStats.BYE}, LB:{extrasStats.LB})
                         </Text>
                     </View>
                 </View>
 
-                {/* SECTION B: Player Stats & This Over Timeline */}
+                {/* SECTION B: Player Stats & Compact This Over Timeline */}
                 <View style={styles.playerCard}>
                     {/* Batters Header */}
                     <View style={styles.tableHeader}>
-                        <Text style={[styles.thText, { flex: 3, textAlign: 'left' }]}>Batsman</Text>
+                        <Text style={[styles.thText, { flex: 3.2, textAlign: 'left' }]}>Batsman</Text>
                         <Text style={[styles.thText, { flex: 1, textAlign: 'center' }]}>R</Text>
                         <Text style={[styles.thText, { flex: 1, textAlign: 'center' }]}>B</Text>
                         <Text style={[styles.thText, { flex: 1, textAlign: 'center' }]}>4s</Text>
@@ -1061,8 +1051,8 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     </View>
                     {/* Striker */}
                     <View style={styles.tableRow}>
-                        <Text style={[styles.tdTextBold, { flex: 3, textAlign: 'left' }]} numberOfLines={1}>
-                            <Text style={{ color: '#2563EB' }}>* </Text>{strikerStats.name}
+                        <Text style={[styles.tdTextBold, { flex: 3.2, textAlign: 'left' }]} numberOfLines={1}>
+                            <Text style={{ color: '#3B82F6', fontWeight: '800' }}>* </Text>{strikerStats.name}
                         </Text>
                         <Text style={[styles.tdTextBold, { flex: 1, textAlign: 'center' }]}>{strikerStats.runs}</Text>
                         <Text style={[styles.tdText, { flex: 1, textAlign: 'center' }]}>{strikerStats.balls}</Text>
@@ -1074,7 +1064,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     </View>
                     {/* Non-Striker */}
                     <View style={styles.tableRow}>
-                        <Text style={[styles.tdTextNormal, { flex: 3, textAlign: 'left', paddingLeft: 10 }]} numberOfLines={1}>
+                        <Text style={[styles.tdTextNormal, { flex: 3.2, textAlign: 'left', paddingLeft: 8 }]} numberOfLines={1}>
                             {nonStrikerStats.name}
                         </Text>
                         <Text style={[styles.tdTextNormal, { flex: 1, textAlign: 'center' }]}>{nonStrikerStats.runs}</Text>
@@ -1087,8 +1077,8 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     </View>
 
                     {/* Bowler Header */}
-                    <View style={[styles.tableHeader, { marginTop: 10, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 8 }]}>
-                        <Text style={[styles.thText, { flex: 3, textAlign: 'left' }]}>Bowler</Text>
+                    <View style={[styles.tableHeader, { marginTop: 6, borderTopWidth: 1, borderTopColor: colors.divider, paddingTop: 6 }]}>
+                        <Text style={[styles.thText, { flex: 3.2, textAlign: 'left' }]}>Bowler</Text>
                         <Text style={[styles.thText, { flex: 1, textAlign: 'center' }]}>O</Text>
                         <Text style={[styles.thText, { flex: 1, textAlign: 'center' }]}>M</Text>
                         <Text style={[styles.thText, { flex: 1, textAlign: 'center' }]}>R</Text>
@@ -1097,7 +1087,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     </View>
                     {/* Bowler Row */}
                     <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-                        <Text style={[styles.tdTextBold, { flex: 3, textAlign: 'left', color: '#2563EB' }]} numberOfLines={1}>
+                        <Text style={[styles.tdTextBold, { flex: 3.2, textAlign: 'left', color: '#3B82F6' }]} numberOfLines={1}>
                             {bowlerStats.name}
                         </Text>
                         <Text style={[styles.tdText, { flex: 1, textAlign: 'center' }]}>
@@ -1111,7 +1101,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                         </Text>
                     </View>
 
-                    {/* THIS OVER TIMELINE */}
+                    {/* THIS OVER TIMELINE (Compact) */}
                     <View style={styles.thisOverContainer}>
                         <Text style={styles.thisOverLabel}>THIS OVER:</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.thisOverList}>
@@ -1138,7 +1128,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                     return (
                                         <View key={index} style={styles.ballColumn}>
                                             <View style={[styles.ballBadge, badgeBgStyle]}>
-                                                <Text style={[styles.ballBadgeText, textStyle, circleText === '•' && { fontSize: 16, lineHeight: 18 }]}>
+                                                <Text style={[styles.ballBadgeText, textStyle, circleText === '•' && { fontSize: 14, lineHeight: 16 }]}>
                                                     {circleText}
                                                 </Text>
                                             </View>
@@ -1155,114 +1145,124 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     </View>
                 </View>
 
-                {/* SECTION D: Modifiers & Wicket */}
-                <View style={styles.modifierGrid}>
+            </ScrollView>
+
+            {/* FIXED BOTTOM SECTION: Controls, Keypad & Action Buttons */}
+            <View style={styles.bottomControlsContainer}>
+                {/* Row 1: Extras Pills (WD, NB, BYE, LB) */}
+                <View style={styles.extrasRow}>
                     <TouchableOpacity 
                         disabled={isInningsComplete || isMatchComplete} 
-                        style={[styles.modButton, activeExtras.WD && styles.modButtonActive, (isInningsComplete || isMatchComplete) && {opacity: 0.5}]} 
+                        style={[styles.extraPill, activeExtras.WD && styles.extraPillActive, (isInningsComplete || isMatchComplete) && { opacity: 0.4 }]} 
                         onPress={() => handleExtraToggle('WD')}
                     >
-                        <Text style={[styles.modBtnText, activeExtras.WD && styles.modBtnTextActive]}>WD</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        disabled={isInningsComplete || isMatchComplete} 
-                        style={[styles.modButton, activeExtras.NB && styles.modButtonActive, (isInningsComplete || isMatchComplete) && {opacity: 0.5}]} 
-                        onPress={() => handleExtraToggle('NB')}
-                    >
-                        <Text style={[styles.modBtnText, activeExtras.NB && styles.modBtnTextActive]}>NB</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        disabled={isInningsComplete || isMatchComplete} 
-                        style={[styles.modButton, activeExtras.BYE && styles.modButtonActive, (isInningsComplete || isMatchComplete) && {opacity: 0.5}]} 
-                        onPress={() => handleExtraToggle('BYE')}
-                    >
-                        <Text style={[styles.modBtnText, activeExtras.BYE && styles.modBtnTextActive]}>BYE</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        disabled={isInningsComplete || isMatchComplete} 
-                        style={[styles.modButton, activeExtras.LB && styles.modButtonActive, (isInningsComplete || isMatchComplete) && {opacity: 0.5}]} 
-                        onPress={() => handleExtraToggle('LB')}
-                    >
-                        <Text style={[styles.modBtnText, activeExtras.LB && styles.modBtnTextActive]}>LB</Text>
+                        <Text style={[styles.extraPillText, activeExtras.WD && styles.extraPillTextActive]}>WD</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity disabled={isInningsComplete || isMatchComplete} style={[styles.actionButton, (isInningsComplete || isMatchComplete) && {opacity: 0.5}]} onPress={() => setIsRetireModalVisible(true)}>
-                        <Text style={styles.actionBtnText}>Retire</Text>
+                    <TouchableOpacity 
+                        disabled={isInningsComplete || isMatchComplete} 
+                        style={[styles.extraPill, activeExtras.NB && styles.extraPillActive, (isInningsComplete || isMatchComplete) && { opacity: 0.4 }]} 
+                        onPress={() => handleExtraToggle('NB')}
+                    >
+                        <Text style={[styles.extraPillText, activeExtras.NB && styles.extraPillTextActive]}>NB</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity disabled={isInningsComplete || isMatchComplete} style={[styles.actionButton, (isInningsComplete || isMatchComplete) && {opacity: 0.5}]} onPress={handleSwap}>
-                        <Text style={styles.actionBtnText}>Swap</Text>
+
+                    <TouchableOpacity 
+                        disabled={isInningsComplete || isMatchComplete} 
+                        style={[styles.extraPill, activeExtras.BYE && styles.extraPillActive, (isInningsComplete || isMatchComplete) && { opacity: 0.4 }]} 
+                        onPress={() => handleExtraToggle('BYE')}
+                    >
+                        <Text style={[styles.extraPillText, activeExtras.BYE && styles.extraPillTextActive]}>BYE</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity disabled={isInningsComplete || isMatchComplete} style={[styles.wicketButton, (isInningsComplete || isMatchComplete) && {opacity: 0.5}]} onPress={openWicketModal}>
-                        <Text style={styles.wicketBtnText}>WICKET</Text>
+
+                    <TouchableOpacity 
+                        disabled={isInningsComplete || isMatchComplete} 
+                        style={[styles.extraPill, activeExtras.LB && styles.extraPillActive, (isInningsComplete || isMatchComplete) && { opacity: 0.4 }]} 
+                        onPress={() => handleExtraToggle('LB')}
+                    >
+                        <Text style={[styles.extraPillText, activeExtras.LB && styles.extraPillTextActive]}>LB</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* SECTION E: Keypad or End Match & Undo Buttons */}
+                {/* Row 2: Utility Row (Undo, Swap, Retire, Penalty) */}
+                <View style={styles.utilityRow}>
+                    <TouchableOpacity style={styles.utilityBtn} onPress={handleUndo}>
+                        <Ionicons name="arrow-undo" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                        <Text style={styles.utilityBtnText}>Undo</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity disabled={isInningsComplete || isMatchComplete} style={[styles.utilityBtn, (isInningsComplete || isMatchComplete) && { opacity: 0.4 }]} onPress={handleSwap}>
+                        <Ionicons name="swap-horizontal" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                        <Text style={styles.utilityBtnText}>Swap</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity disabled={isInningsComplete || isMatchComplete} style={[styles.utilityBtn, (isInningsComplete || isMatchComplete) && { opacity: 0.4 }]} onPress={() => setIsRetireModalVisible(true)}>
+                        <Ionicons name="exit-outline" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                        <Text style={styles.utilityBtnText}>Retire</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity disabled={isInningsComplete || isMatchComplete} style={[styles.utilityBtn, (isInningsComplete || isMatchComplete) && { opacity: 0.4 }]} onPress={() => setIsPenaltyModalVisible(true)}>
+                        <Ionicons name="flag-outline" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                        <Text style={styles.utilityBtnText}>Penalty</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Row 3 & 4: Primary Run & Wicket Keypad Grid */}
                 {isMatchComplete ? (
                     !showMatchResultCard && (
-                        <View style={{ paddingHorizontal: 12, paddingBottom: 100, paddingTop: 10, flexDirection: 'row', gap: 10 }}>
-                            <TouchableOpacity 
-                                style={{ 
-                                    width: '30%', 
-                                    backgroundColor: 'white', 
-                                    borderWidth: 1, 
-                                    borderColor: '#CBD5E1', 
-                                    paddingVertical: 16, 
-                                    borderRadius: 10, 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center', 
-                                    elevation: 2 
-                                }} 
-                                onPress={handleUndo}
-                            >
-                                <Text style={{ color: '#1E3A8A', fontSize: 16, fontWeight: 'bold' }}>Undo</Text>
+                        <View style={styles.matchCompleteRow}>
+                            <TouchableOpacity style={styles.undoMatchBtn} onPress={handleUndo}>
+                                <Text style={styles.undoMatchBtnText}>Undo</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity 
-                                style={{ 
-                                    flex: 1, 
-                                    backgroundColor: '#EF4444', 
-                                    paddingVertical: 16, 
-                                    borderRadius: 10, 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center', 
-                                    elevation: 4,
-                                    shadowColor: '#000',
-                                    shadowOffset: { width: 0, height: 3 },
-                                    shadowOpacity: 0.25,
-                                    shadowRadius: 5
-                                }} 
-                                onPress={handleFinishMatch}
-                            >
-                                <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>End Match</Text>
+                            <TouchableOpacity style={styles.endMatchBtn} onPress={handleFinishMatch}>
+                                <Text style={styles.endMatchBtnText}>End Match</Text>
                             </TouchableOpacity>
                         </View>
                     )
                 ) : (
-                    <View style={styles.keypadGrid}>
-                        <TouchableOpacity style={styles.keyButton} onPress={handleUndo}><Text style={styles.keyText}>Undo</Text></TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, isInningsComplete && {opacity: 0.5}]} onPress={() => handlePressRun(0)}><Text style={styles.keyTextLarge}>0</Text></TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, isInningsComplete && {opacity: 0.5}]} onPress={() => handlePressRun(1)}><Text style={styles.keyTextLarge}>1</Text></TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, isInningsComplete && {opacity: 0.5}]} onPress={() => handlePressRun(2)}><Text style={styles.keyTextLarge}>2</Text></TouchableOpacity>
+                    <View style={styles.keypadContainer}>
+                        {/* Run Row A: 0, 1, 2, 3 */}
+                        <View style={styles.keypadRow}>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(0)}>
+                                <Text style={styles.runKeyText}>0</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(1)}>
+                                <Text style={styles.runKeyText}>1</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(2)}>
+                                <Text style={styles.runKeyText}>2</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(3)}>
+                                <Text style={styles.runKeyText}>3</Text>
+                            </TouchableOpacity>
+                        </View>
 
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, isInningsComplete && {opacity: 0.5}]}><Text style={styles.keyText}>P'Ship</Text></TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, isInningsComplete && {opacity: 0.5}]} onPress={() => handlePressRun(3)}><Text style={styles.keyTextLarge}>3</Text></TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, { backgroundColor: '#DBEAFE', borderColor: '#93C5FD' }, isInningsComplete && {opacity: 0.5}]} onPress={() => handlePressRun(4)}>
-                            <Text style={[styles.keyTextLarge, { color: '#1E40AF' }]}>4</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, isInningsComplete && {opacity: 0.5}]} onPress={() => handlePressRun(5)}><Text style={styles.keyTextLarge}>5</Text></TouchableOpacity>
+                        {/* Run Row B: 4, 5, 6, WICKET */}
+                        <View style={styles.keypadRow}>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, styles.fourKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(4)}>
+                                <Text style={[styles.runKeyText, styles.fourKeyText]}>4</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(5)}>
+                                <Text style={styles.runKeyText}>5</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, styles.sixKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(6)}>
+                                <Text style={[styles.runKeyText, styles.sixKeyText]}>6</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, isInningsComplete && {opacity: 0.5}]}><Text style={styles.keyText}>Extras</Text></TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, { backgroundColor: '#2563EB', borderColor: '#1D4ED8' }, isInningsComplete && {opacity: 0.5}]} onPress={() => handlePressRun(6)}>
-                            <Text style={[styles.keyTextLarge, { color: 'white' }]}>6</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity disabled={isInningsComplete} style={[styles.keyButton, { width: '47.5%' }, isInningsComplete && {opacity: 0.5}]} onPress={() => setIsPenaltyModalVisible(true)}>
-                            <Text style={styles.keyText}>Penalty</Text>
-                        </TouchableOpacity>
+                            {/* WICKET BUTTON (Large, Crimson Red & Prominent) */}
+                            <TouchableOpacity 
+                                disabled={isInningsComplete || wickets >= 10} 
+                                style={[styles.wicketKey, (isInningsComplete || wickets >= 10) && { opacity: 0.4 }]} 
+                                onPress={openWicketModal}
+                            >
+                                <Ionicons name="close-circle" size={16} color="white" style={{ marginRight: 3 }} />
+                                <Text style={styles.wicketKeyText}>OUT</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 )}
-
-            </ScrollView>
+            </View>
 
             {/* END OF OVER MODAL */}
             <Modal visible={isNewBowlerModalVisible && !isMatchOver && !isInningsComplete} transparent={true} animationType="fade">
@@ -1320,7 +1320,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                 style={{
                                                     maxHeight: 180,
                                                     marginTop: 8,
-                                                    backgroundColor: '#0F172A',
+                                                    backgroundColor: colors.card,
                                                     borderRadius: 12,
                                                     borderWidth: 1,
                                                     borderColor: colors.cardBorder,
@@ -1340,7 +1340,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                                 paddingHorizontal: 14,
                                                                 paddingVertical: 12,
                                                                 borderBottomWidth: idx < eligibleBowlers.length - 1 ? 1 : 0,
-                                                                borderBottomColor: colors.card,
+                                                                borderBottomColor: colors.cardBorder,
                                                                 backgroundColor: isSelected ? colors.accentBg : 'transparent',
                                                             }}
                                                             onPress={() => {
@@ -1439,7 +1439,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                 style={{
                                                     maxHeight: 180,
                                                     marginTop: 8,
-                                                    backgroundColor: '#0F172A',
+                                                    backgroundColor: colors.card,
                                                     borderRadius: 12,
                                                     borderWidth: 1,
                                                     borderColor: colors.cardBorder,
@@ -1459,7 +1459,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                                 paddingHorizontal: 14,
                                                                 paddingVertical: 12,
                                                                 borderBottomWidth: idx < availableSquadBatters.length - 1 ? 1 : 0,
-                                                                borderBottomColor: colors.card,
+                                                                borderBottomColor: colors.cardBorder,
                                                                 backgroundColor: isSelected ? colors.accentBg : 'transparent',
                                                             }}
                                                             onPress={() => {
@@ -1499,110 +1499,84 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
             {/* REAL-WORLD WICKET DISMISSAL MODAL */}
             <Modal visible={isRealWicketModalVisible} transparent={true} animationType="fade">
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContainer, { maxWidth: 460, width: '92%', borderRadius: 20, backgroundColor: '#0F172A', borderWidth: 1, borderColor: colors.cardBorder }]}>
+                    <View style={[styles.modalContainer, { maxWidth: 460, width: '92%', borderRadius: 20, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.cardBorder }]}>
                         {/* Header */}
-                        <View style={{ padding: 18, borderBottomWidth: 1, borderBottomColor: colors.divider, backgroundColor: colors.card, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: colors.divider, backgroundColor: colors.card, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EF4444', justifyContent: 'center', alignItems: 'center', shadowColor: '#EF4444', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.4, shadowRadius: 4 }}>
-                                    <Ionicons name="flash" size={18} color="white" />
+                                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colors.accentRedBg, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Ionicons name="baseball-outline" size={18} color="#EF4444" />
                                 </View>
                                 <View>
-                                    <Text style={{ fontSize: 17, fontWeight: '800', color: colors.textPrimary, letterSpacing: 0.5 }}>Wicket Dismissal</Text>
-                                    <Text style={{ fontSize: 11, color: colors.textSecondary, fontWeight: '500' }}>Select Out Batsman & Dismissal Mode</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>Dismissal Details</Text>
+                                    <Text style={{ fontSize: 11, color: colors.textMuted }}>Select Wicket Type & Fielder</Text>
                                 </View>
                             </View>
                             <TouchableOpacity onPress={() => setIsRealWicketModalVisible(false)} style={{ padding: 4 }}>
-                                <Ionicons name="close" size={22} color={colors.textSecondary} />
+                                <Ionicons name="close-circle" size={22} color={colors.textSecondary} />
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView style={{ padding: 16, maxHeight: 520 }} showsVerticalScrollIndicator={false}>
-                            {/* Who is Out? Section */}
-                            <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, letterSpacing: 0.8, marginBottom: 10, textTransform: 'uppercase' }}>OUT BATSMAN</Text>
-                            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 18 }}>
+                        {/* Body */}
+                        <ScrollView style={{ padding: 16, maxHeight: 440 }} showsVerticalScrollIndicator={false}>
+                            {/* Batter Selection */}
+                            <Text style={{ fontSize: 10, fontWeight: '800', color: colors.inputPlaceholder, letterSpacing: 0.8, marginBottom: 6 }}>SELECT DISMISSED BATTER</Text>
+                            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
                                 <TouchableOpacity
                                     style={{
                                         flex: 1,
-                                        backgroundColor: wicketOutPlayer === 'striker' ? colors.accentRedBg : colors.card,
+                                        backgroundColor: wicketOutPlayer === 'striker' ? colors.accentBg : colors.card,
                                         borderWidth: 1.5,
-                                        borderColor: wicketOutPlayer === 'striker' ? '#EF4444' : colors.buttonBg,
-                                        borderRadius: 14,
-                                        padding: 12,
+                                        borderColor: wicketOutPlayer === 'striker' ? '#10B981' : colors.cardBorder,
+                                        borderRadius: 12,
+                                        padding: 10,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
                                     }}
                                     onPress={() => setWicketOutPlayer('striker')}
                                 >
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                                        <Text style={{ fontSize: 10, fontWeight: '800', color: wicketOutPlayer === 'striker' ? '#EF4444' : colors.textMuted, letterSpacing: 0.5 }}>STRIKER *</Text>
-                                        {wicketOutPlayer === 'striker' && (
-                                            <Ionicons name="checkmark-circle" size={16} color="#EF4444" />
-                                        )}
+                                    <View>
+                                        <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: '600' }}>STRIKER</Text>
+                                        <Text style={{ fontSize: 13, fontWeight: '700', color: colors.textPrimary }} numberOfLines={1}>{strikerStats.name || 'Striker'}</Text>
                                     </View>
-                                    <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary }} numberOfLines={1}>
-                                        {strikerStats.name || 'Striker'}
-                                    </Text>
-                                    <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>{strikerStats.runs} runs ({strikerStats.balls}b)</Text>
+                                    {wicketOutPlayer === 'striker' && <Ionicons name="checkmark-circle" size={16} color="#10B981" />}
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     style={{
                                         flex: 1,
-                                        backgroundColor: wicketOutPlayer === 'nonStriker' ? colors.accentRedBg : colors.card,
+                                        backgroundColor: wicketOutPlayer === 'nonStriker' ? colors.accentBg : colors.card,
                                         borderWidth: 1.5,
-                                        borderColor: wicketOutPlayer === 'nonStriker' ? '#EF4444' : colors.buttonBg,
-                                        borderRadius: 14,
-                                        padding: 12,
+                                        borderColor: wicketOutPlayer === 'nonStriker' ? '#10B981' : colors.cardBorder,
+                                        borderRadius: 12,
+                                        padding: 10,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
                                     }}
                                     onPress={() => setWicketOutPlayer('nonStriker')}
                                 >
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                                        <Text style={{ fontSize: 10, fontWeight: '800', color: wicketOutPlayer === 'nonStriker' ? '#EF4444' : colors.textMuted, letterSpacing: 0.5 }}>NON-STRIKER</Text>
-                                        {wicketOutPlayer === 'nonStriker' && (
-                                            <Ionicons name="checkmark-circle" size={16} color="#EF4444" />
-                                        )}
+                                    <View>
+                                        <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: '600' }}>NON-STRIKER</Text>
+                                        <Text style={{ fontSize: 13, fontWeight: '700', color: colors.textPrimary }} numberOfLines={1}>{nonStrikerStats.name || 'Non-Striker'}</Text>
                                     </View>
-                                    <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary }} numberOfLines={1}>
-                                        {nonStrikerStats.name || 'Non-Striker'}
-                                    </Text>
-                                    <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>{nonStrikerStats.runs} runs ({nonStrikerStats.balls}b)</Text>
+                                    {wicketOutPlayer === 'nonStriker' && <Ionicons name="checkmark-circle" size={16} color="#10B981" />}
                                 </TouchableOpacity>
                             </View>
 
-                            {/* Dismissal Category Segmented Tab Bar */}
-                            <View style={{ flexDirection: 'row', backgroundColor: colors.card, borderRadius: 12, padding: 3, marginBottom: 14, borderWidth: 1, borderColor: colors.cardBorder }}>
-                                <TouchableOpacity
-                                    style={{
-                                        flex: 1,
-                                        paddingVertical: 8,
-                                        alignItems: 'center',
-                                        backgroundColor: !showAdvancedDismissals ? '#10B981' : 'transparent',
-                                        borderRadius: 10,
-                                    }}
-                                    onPress={() => setShowAdvancedDismissals(false)}
-                                >
-                                    <Text style={{ fontSize: 12, fontWeight: '800', color: !showAdvancedDismissals ? colors.background : colors.textSecondary }}>
-                                        Standard Modes
-                                    </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={{
-                                        flex: 1,
-                                        paddingVertical: 8,
-                                        alignItems: 'center',
-                                        backgroundColor: showAdvancedDismissals ? '#10B981' : 'transparent',
-                                        borderRadius: 10,
-                                    }}
-                                    onPress={() => setShowAdvancedDismissals(true)}
-                                >
-                                    <Text style={{ fontSize: 12, fontWeight: '800', color: showAdvancedDismissals ? colors.background : colors.textSecondary }}>
-                                        Advanced Modes
+                            {/* Dismissal Mode Title & Toggle */}
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                <Text style={{ fontSize: 10, fontWeight: '800', color: colors.inputPlaceholder, letterSpacing: 0.8 }}>METHOD OF DISMISSAL</Text>
+                                <TouchableOpacity onPress={() => setShowAdvancedDismissals(!showAdvancedDismissals)}>
+                                    <Text style={{ fontSize: 11, fontWeight: '700', color: '#3B82F6' }}>
+                                        {showAdvancedDismissals ? 'Show Standard' : 'More Modes...'}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
 
                             {/* Standard Dismissal Grid */}
                             {!showAdvancedDismissals ? (
-                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
                                     {[
                                         { type: 'Bowled', icon: 'radio-button-on-outline', desc: 'b Bowler' },
                                         { type: 'Caught', icon: 'hand-left-outline', desc: 'c Fielder' },
@@ -1620,20 +1594,20 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                     backgroundColor: isSelected ? colors.accentRedBg : colors.card,
                                                     borderWidth: 1.5,
                                                     borderColor: isSelected ? '#EF4444' : colors.cardBorder,
-                                                    borderRadius: 14,
-                                                    padding: 12,
+                                                    borderRadius: 12,
+                                                    padding: 10,
                                                     flexDirection: 'row',
                                                     alignItems: 'center',
-                                                    gap: 10,
+                                                    gap: 8,
                                                 }}
                                                 onPress={() => setWicketDismissalType(item.type as any)}
                                             >
-                                                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isSelected ? '#EF4444' : colors.cardBorder, justifyContent: 'center', alignItems: 'center' }}>
-                                                    <Ionicons name={item.icon as any} size={16} color={isSelected ? 'white' : colors.textSecondary} />
+                                                <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: isSelected ? '#EF4444' : colors.cardBorder, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Ionicons name={item.icon as any} size={14} color={isSelected ? 'white' : colors.textSecondary} />
                                                 </View>
                                                 <View style={{ flex: 1 }}>
-                                                    <Text style={{ fontSize: 13, fontWeight: '700', color: isSelected ? '#FFFFFF' : colors.textPrimary }}>{item.type}</Text>
-                                                    <Text style={{ fontSize: 10, color: isSelected ? '#FCA5A5' : colors.textMuted }}>{item.desc}</Text>
+                                                    <Text style={{ fontSize: 12, fontWeight: '700', color: isSelected ? colors.textPrimary : colors.textPrimary }}>{item.type}</Text>
+                                                    <Text style={{ fontSize: 9, color: isSelected ? '#FCA5A5' : colors.textMuted }}>{item.desc}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         );
@@ -1641,7 +1615,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                 </View>
                             ) : (
                                 /* Advanced Dismissals Grid */
-                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
                                     {[
                                         { type: 'Hit Ball Twice', icon: 'repeat-outline', desc: 'Hit ball twice' },
                                         { type: 'Obstructing Field', icon: 'ban-outline', desc: 'Obstructing field' },
@@ -1658,19 +1632,19 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                     backgroundColor: isSelected ? colors.accentRedBg : colors.card,
                                                     borderWidth: 1.5,
                                                     borderColor: isSelected ? '#EF4444' : colors.cardBorder,
-                                                    borderRadius: 14,
-                                                    padding: 12,
+                                                    borderRadius: 12,
+                                                    padding: 10,
                                                     flexDirection: 'row',
                                                     alignItems: 'center',
-                                                    gap: 10,
+                                                    gap: 8,
                                                 }}
                                                 onPress={() => setWicketDismissalType(item.type as any)}
                                             >
-                                                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isSelected ? '#EF4444' : colors.cardBorder, justifyContent: 'center', alignItems: 'center' }}>
-                                                    <Ionicons name={item.icon as any} size={16} color={isSelected ? 'white' : colors.textSecondary} />
+                                                <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: isSelected ? '#EF4444' : colors.cardBorder, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Ionicons name={item.icon as any} size={14} color={isSelected ? 'white' : colors.textSecondary} />
                                                 </View>
                                                 <View style={{ flex: 1 }}>
-                                                    <Text style={{ fontSize: 12, fontWeight: '700', color: isSelected ? '#FFFFFF' : colors.textPrimary }}>{item.type}</Text>
+                                                    <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textPrimary }}>{item.type}</Text>
                                                     <Text style={{ fontSize: 9, color: isSelected ? '#FCA5A5' : colors.textMuted }}>{item.desc}</Text>
                                                 </View>
                                             </TouchableOpacity>
@@ -1679,25 +1653,25 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                 </View>
                             )}
 
-                            {/* Fielder Selection (for Caught, Stumped, Run Out) */}
+                            {/* Fielder Selection */}
                             {(wicketDismissalType === 'Caught' || wicketDismissalType === 'Stumped' || wicketDismissalType === 'Run Out') && (
-                                <View style={{ marginBottom: 16, backgroundColor: colors.card, padding: 14, borderRadius: 14, borderWidth: 1, borderColor: colors.cardBorder }}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                <View style={{ marginBottom: 14, backgroundColor: colors.card, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.cardBorder }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                                         <Text style={{ fontSize: 10, fontWeight: '800', color: '#10B981', letterSpacing: 0.8 }}>
                                             {wicketDismissalType === 'Run Out' ? 'PRIMARY FIELDER (THROWER)' : 'FIELDER NAME'}
                                         </Text>
-                                        <Text style={{ fontSize: 10, fontWeight: '600', color: colors.textMuted }}>OPTIONAL</Text>
+                                        <Text style={{ fontSize: 9, fontWeight: '600', color: colors.textMuted }}>OPTIONAL</Text>
                                     </View>
                                     <TextInput
-                                        style={{ borderBottomWidth: 1.5, borderBottomColor: '#10B981', fontSize: 14, color: colors.textPrimary, paddingVertical: 6, marginBottom: 8 }}
+                                        style={{ borderBottomWidth: 1.5, borderBottomColor: '#10B981', fontSize: 13, color: colors.textPrimary, paddingVertical: 4, marginBottom: 6 }}
                                         value={wicketFielderName}
                                         onChangeText={setWicketFielderName}
-                                        placeholder={wicketDismissalType === 'Run Out' ? "Thrower (optional) or pick below" : "Fielder (optional) or pick below"}
+                                        placeholder={wicketDismissalType === 'Run Out' ? "Thrower (optional)" : "Fielder (optional)"}
                                         placeholderTextColor={colors.inputPlaceholder}
                                     />
 
                                     {currentBowlingSquad && currentBowlingSquad.length > 0 && (
-                                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, marginBottom: wicketDismissalType === 'Run Out' ? 12 : 0 }}>
+                                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, marginBottom: wicketDismissalType === 'Run Out' ? 8 : 0 }}>
                                             {currentBowlingSquad.map((p: string, idx: number) => (
                                                 <TouchableOpacity
                                                     key={idx}
@@ -1710,17 +1684,17 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                         </ScrollView>
                                     )}
 
-                                    {/* Optional 2nd Fielder for 2-Fielder Run Out */}
+                                    {/* Optional 2nd Fielder for Run Out */}
                                     {wicketDismissalType === 'Run Out' && (
-                                        <View style={{ marginTop: 8, paddingTop: 10, borderTopWidth: 1, borderTopColor: colors.divider }}>
-                                            <Text style={{ fontSize: 10, fontWeight: '800', color: '#3B82F6', letterSpacing: 0.8, marginBottom: 6 }}>
+                                        <View style={{ marginTop: 6, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.divider }}>
+                                            <Text style={{ fontSize: 10, fontWeight: '800', color: '#3B82F6', letterSpacing: 0.8, marginBottom: 4 }}>
                                                 SECOND FIELDER / KEEPER (OPTIONAL)
                                             </Text>
                                             <TextInput
-                                                style={{ borderBottomWidth: 1.5, borderBottomColor: '#3B82F6', fontSize: 14, color: colors.textPrimary, paddingVertical: 6, marginBottom: 8 }}
+                                                style={{ borderBottomWidth: 1.5, borderBottomColor: '#3B82F6', fontSize: 13, color: colors.textPrimary, paddingVertical: 4, marginBottom: 6 }}
                                                 value={wicketFielder2Name}
                                                 onChangeText={setWicketFielder2Name}
-                                                placeholder="Keeper / Catcher name or pick below"
+                                                placeholder="Keeper / Catcher name"
                                                 placeholderTextColor={colors.inputPlaceholder}
                                             />
 
@@ -1747,24 +1721,24 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
 
                             {/* Runs completed (for Run Out) */}
                             {wicketDismissalType === 'Run Out' && (
-                                <View style={{ marginBottom: 16, backgroundColor: colors.card, padding: 14, borderRadius: 14, borderWidth: 1, borderColor: colors.cardBorder }}>
-                                    <Text style={{ fontSize: 10, fontWeight: '800', color: '#F59E0B', letterSpacing: 0.8, marginBottom: 8 }}>RUNS COMPLETED BEFORE RUN OUT</Text>
-                                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                                <View style={{ marginBottom: 14, backgroundColor: colors.card, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.cardBorder }}>
+                                    <Text style={{ fontSize: 10, fontWeight: '800', color: '#F59E0B', letterSpacing: 0.8, marginBottom: 6 }}>RUNS COMPLETED BEFORE RUN OUT</Text>
+                                    <View style={{ flexDirection: 'row', gap: 6 }}>
                                         {[0, 1, 2, 3].map((r) => (
                                             <TouchableOpacity
                                                 key={r}
                                                 style={{
                                                     flex: 1,
                                                     alignItems: 'center',
-                                                    paddingVertical: 10,
-                                                    borderRadius: 10,
+                                                    paddingVertical: 8,
+                                                    borderRadius: 8,
                                                     backgroundColor: wicketRunsScored === r ? '#F59E0B' : colors.card,
                                                     borderWidth: 1,
                                                     borderColor: wicketRunsScored === r ? '#F59E0B' : colors.buttonBg,
                                                 }}
                                                 onPress={() => setWicketRunsScored(r)}
                                             >
-                                                <Text style={{ fontSize: 14, fontWeight: '800', color: wicketRunsScored === r ? colors.background : colors.textPrimary }}>{r}</Text>
+                                                <Text style={{ fontSize: 13, fontWeight: '800', color: wicketRunsScored === r ? colors.background : colors.textPrimary }}>{r}</Text>
                                             </TouchableOpacity>
                                         ))}
                                     </View>
@@ -1772,34 +1746,29 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                             )}
 
                             {/* Action Buttons */}
-                            <View style={{ flexDirection: 'row', gap: 10, marginTop: 6, marginBottom: 10 }}>
+                            <View style={{ flexDirection: 'row', gap: 8, marginTop: 4, marginBottom: 8 }}>
                                 <TouchableOpacity
-                                    style={{ flex: 1, backgroundColor: colors.card, paddingVertical: 14, borderRadius: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.cardBorder }}
+                                    style={{ flex: 1, backgroundColor: colors.card, paddingVertical: 12, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: colors.cardBorder }}
                                     onPress={() => setIsRealWicketModalVisible(false)}
                                 >
-                                    <Text style={{ color: colors.textSecondary, fontWeight: '700', fontSize: 14 }}>Cancel</Text>
+                                    <Text style={{ color: colors.textSecondary, fontWeight: '700', fontSize: 13 }}>Cancel</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     style={{
                                         flex: 1.5,
                                         backgroundColor: '#EF4444',
-                                        paddingVertical: 14,
-                                        borderRadius: 14,
+                                        paddingVertical: 12,
+                                        borderRadius: 12,
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         flexDirection: 'row',
                                         gap: 6,
-                                        shadowColor: '#EF4444',
-                                        shadowOffset: { width: 0, height: 4 },
-                                        shadowOpacity: 0.3,
-                                        shadowRadius: 8,
-                                        elevation: 4,
                                     }}
                                     onPress={confirmRealWicket}
                                 >
-                                    <Ionicons name="checkmark-circle" size={18} color="white" />
-                                    <Text style={{ color: 'white', fontWeight: '800', fontSize: 15 }}>Confirm Wicket</Text>
+                                    <Ionicons name="checkmark-circle" size={16} color="white" />
+                                    <Text style={{ color: 'white', fontWeight: '800', fontSize: 14 }}>Confirm Wicket</Text>
                                 </TouchableOpacity>
                             </View>
                         </ScrollView>
@@ -1815,10 +1784,10 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                             <Text style={styles.modalTitle}>1st Innings Complete</Text>
                         </View>
                         <View style={styles.modalContent}>
-                            <Text style={[styles.modalLabel, { textAlign: 'center', fontSize: 18, marginBottom: 20 }]}>
+                            <Text style={[styles.modalLabel, { textAlign: 'center', fontSize: 16, marginBottom: 16 }]}>
                                 Target is {teamRuns + 1}
                             </Text>
-                            <Text style={[styles.modalTitle, { fontSize: 32, marginBottom: 25 }]}>
+                            <Text style={[styles.modalTitle, { fontSize: 28, marginBottom: 20 }]}>
                                 Score: {teamRuns}/{wickets}
                             </Text>
                             <TouchableOpacity style={styles.saveBtn} onPress={startSecondInnings}>
@@ -1835,7 +1804,9 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     <View style={styles.modalContainer}>
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Retire Batsman</Text>
-                            <TouchableOpacity onPress={() => setIsRetireModalVisible(false)}><Ionicons name="close" size={24} color="#333" /></TouchableOpacity>
+                            <TouchableOpacity onPress={() => setIsRetireModalVisible(false)}>
+                                <Ionicons name="close" size={24} color={colors.textSecondary} />
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.modalContent}>
                             <Text style={styles.modalLabel}>Enter New Batsman's Name:</Text>
@@ -1844,6 +1815,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                 value={tempInputName} 
                                 onChangeText={setTempInputName} 
                                 placeholder="Batsman Name" 
+                                placeholderTextColor={colors.inputPlaceholder}
                                 autoFocus
                             />
 
@@ -1878,27 +1850,29 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                     <View style={styles.modalContainer}>
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Add Penalty Runs</Text>
-                            <TouchableOpacity onPress={() => setIsPenaltyModalVisible(false)}><Ionicons name="close" size={24} color="#333" /></TouchableOpacity>
+                            <TouchableOpacity onPress={() => setIsPenaltyModalVisible(false)}>
+                                <Ionicons name="close" size={24} color={colors.textSecondary} />
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.modalContent}>
-                            <Text style={[styles.modalLabel, { textAlign: 'center', marginBottom: 20 }]}>
-                                Award penalty runs to a team (e.g., ball hitting fielding helmet).
+                            <Text style={[styles.modalLabel, { textAlign: 'center', marginBottom: 16 }]}>
+                                Award penalty runs to a team (e.g. ball hitting fielding helmet).
                             </Text>
-                            <TouchableOpacity style={[styles.saveBtn, { marginBottom: 10 }]} onPress={handlePenaltyBatting}>
+                            <TouchableOpacity style={[styles.saveBtn, { marginBottom: 8 }]} onPress={handlePenaltyBatting}>
                                 <Text style={styles.saveBtnText}>+5 to Batting</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.saveBtn, { marginBottom: 10, backgroundColor: '#EAB308' }]} onPress={handlePenaltyBowling}>
+                            <TouchableOpacity style={[styles.saveBtn, { marginBottom: 8, backgroundColor: '#F59E0B' }]} onPress={handlePenaltyBowling}>
                                 <Text style={styles.saveBtnText}>+5 to Bowling</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.saveBtn, { backgroundColor: '#9CA3AF' }]} onPress={() => setIsPenaltyModalVisible(false)}>
-                                <Text style={styles.saveBtnText}>Cancel</Text>
+                            <TouchableOpacity style={[styles.saveBtn, { backgroundColor: colors.buttonBg, borderWidth: 1, borderColor: colors.cardBorder }]} onPress={() => setIsPenaltyModalVisible(false)}>
+                                <Text style={[styles.saveBtnText, { color: colors.textSecondary }]}>Cancel</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
             </Modal>
 
-            {/* MATCH OVER CARD (No dark background overlay) */}
+            {/* MATCH OVER FLOATING CARD */}
             {showMatchResultCard && (
                 <View style={styles.floatingCardContainer} pointerEvents="box-none">
                     <View style={styles.floatingCard}>
@@ -1906,7 +1880,7 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                             <Text style={styles.floatingCardTitle}>Match Over</Text>
                         </View>
                         <View style={styles.floatingCardContent}>
-                            <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#1E3A8A', textAlign: 'center', marginBottom: 25 }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#10B981', textAlign: 'center', marginBottom: 20 }}>
                                 {matchResult}
                             </Text>
                             <TouchableOpacity style={styles.saveBtn} onPress={handleNavigateHome}>
@@ -1921,35 +1895,35 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
             {isScorecardVisible && (
                 <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50, elevation: 5, backgroundColor: colors.background }}>
                     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-                        {/* Dark Header */}
+                        {/* Header */}
                         <View style={{ backgroundColor: colors.background, paddingTop: 16, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.divider }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <TouchableOpacity onPress={() => setIsScorecardVisible(false)} style={{ paddingVertical: 5, paddingRight: 15 }}>
+                                    <TouchableOpacity onPress={() => setIsScorecardVisible(false)} style={{ paddingVertical: 4, paddingRight: 14 }}>
                                         <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
                                     </TouchableOpacity>
                                     <View>
-                                        <Text style={{ color: colors.textPrimary, fontSize: 20, fontWeight: '700' }}>Match Centre</Text>
-                                        <Text style={{ color: colors.textMuted, fontSize: 12 }}>{battingTeamName} vs {bowlingTeamName}</Text>
+                                        <Text style={{ color: colors.textPrimary, fontSize: 18, fontWeight: '800' }}>Match Centre</Text>
+                                        <Text style={{ color: colors.textMuted, fontSize: 11 }}>{battingTeamName} vs {bowlingTeamName}</Text>
                                     </View>
                                 </View>
                             </View>
 
-                            {/* EXACTLY Two Tabs: "Scoreboard" and "Over by over" */}
+                            {/* Scoreboard / Overs Tabs */}
                             <View style={{ flexDirection: 'row' }}>
                                 <TouchableOpacity
-                                    style={{ flex: 1, paddingVertical: 12, alignItems: 'center', borderBottomWidth: activeScorecardTab === 'Scoreboard' ? 2 : 0, borderBottomColor: '#10B981' }}
+                                    style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderBottomWidth: activeScorecardTab === 'Scoreboard' ? 2 : 0, borderBottomColor: '#10B981' }}
                                     onPress={() => setActiveScorecardTab('Scoreboard')}
                                 >
-                                    <Text style={{ color: activeScorecardTab === 'Scoreboard' ? '#10B981' : colors.textMuted, fontWeight: activeScorecardTab === 'Scoreboard' ? '700' : '500', fontSize: 14 }}>
+                                    <Text style={{ color: activeScorecardTab === 'Scoreboard' ? '#10B981' : colors.textMuted, fontWeight: activeScorecardTab === 'Scoreboard' ? '700' : '500', fontSize: 13 }}>
                                         Scoreboard
                                     </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={{ flex: 1, paddingVertical: 12, alignItems: 'center', borderBottomWidth: activeScorecardTab === 'Overs' ? 2 : 0, borderBottomColor: '#10B981' }}
+                                    style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderBottomWidth: activeScorecardTab === 'Overs' ? 2 : 0, borderBottomColor: '#10B981' }}
                                     onPress={() => setActiveScorecardTab('Overs')}
                                 >
-                                    <Text style={{ color: activeScorecardTab === 'Overs' ? '#10B981' : colors.textMuted, fontWeight: activeScorecardTab === 'Overs' ? '700' : '500', fontSize: 14 }}>
+                                    <Text style={{ color: activeScorecardTab === 'Overs' ? '#10B981' : colors.textMuted, fontWeight: activeScorecardTab === 'Overs' ? '700' : '500', fontSize: 13 }}>
                                         Over by over
                                     </Text>
                                 </TouchableOpacity>
@@ -1962,25 +1936,8 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                 <ScoreboardView
                                     matchResultText={isMatchOver ? matchResult : (currentInnings === 2 && targetScore ? `${battingTeamName} need ${Math.max(0, targetScore - teamRuns)} runs in ${Math.max(0, (parseInt(settings?.overs || '20') * bpo) - totalBalls)} balls` : undefined)}
                                     inningsList={(() => {
-                                        // Dynamic Scorecard Construction in Batting Order (Positions 1 to 11)
                                         const liveBatters: Batter[] = [];
                                         
-                                        const matchPlayerName = (nameA: string, nameB: string) => {
-                                            if (!nameA || !nameB) return false;
-                                            const cleanA = nameA.toLowerCase().replace(/\(c\)|\(wk\)/g, '').trim();
-                                            const cleanB = nameB.toLowerCase().replace(/\(c\)|\(wk\)/g, '').trim();
-                                            if (cleanA === cleanB) return true;
-                                            const partsA = cleanA.split(' ').filter(x => x.length > 2);
-                                            const partsB = cleanB.split(' ').filter(x => x.length > 2);
-                                            if (partsA.length > 0 && partsB.length > 0) {
-                                                const lastA = partsA[partsA.length - 1];
-                                                const lastB = partsB[partsB.length - 1];
-                                                if (lastA === lastB && partsA[0] === partsB[0]) return true;
-                                            }
-                                            return false;
-                                        };
-
-                                        // 1. Add dismissed batters for current innings in dismissal order
                                         const currentDismissed = dismissedBatters.filter(b => b.innings === currentInnings);
                                         currentDismissed.forEach((dis, idx) => {
                                             liveBatters.push({
@@ -1995,7 +1952,6 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                             });
                                         });
 
-                                        // 2. Add active batters (Striker & Non-Striker) who are currently not out
                                         if (strikerStats?.name && !liveBatters.some(b => matchPlayerName(b.name, strikerStats.name))) {
                                             liveBatters.push({
                                                 id: 'striker-active',
@@ -2024,7 +1980,6 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                             });
                                         }
 
-                                        // 3. Add Did Not Bat (DNB) batters from squad after all active/dismissed batters
                                         const squadList = (currentBattingSquad && currentBattingSquad.length > 0)
                                             ? currentBattingSquad
                                             : [];
@@ -2046,7 +2001,6 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                             }
                                         });
 
-                                        // Bowlers for current innings
                                         const liveBowlers: Bowler[] = [];
                                         bowlersHistory.filter(b => b.innings === currentInnings).forEach((b, idx) => {
                                             const isActive = b.name === bowlerStats.name;
@@ -2092,29 +2046,27 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                 />
                             ) : (
                                 <ScrollView style={{ flex: 1, backgroundColor: colors.background }} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 12 }}>
-                                    {/* Innings Selector Bar */}
                                     {(currentInnings > 1 || allOversHistory.some((o: any) => o.innings === 2)) && (
-                                        <View style={{ flexDirection: 'row', backgroundColor: colors.card, marginBottom: 14, borderRadius: 12, padding: 4, borderWidth: 1, borderColor: colors.cardBorder }}>
+                                        <View style={{ flexDirection: 'row', backgroundColor: colors.card, marginBottom: 12, borderRadius: 10, padding: 3, borderWidth: 1, borderColor: colors.cardBorder }}>
                                             <TouchableOpacity
-                                                style={{ flex: 1, paddingVertical: 8, alignItems: 'center', backgroundColor: selectedOversInnings === 1 ? '#10B981' : 'transparent', borderRadius: 8 }}
+                                                style={{ flex: 1, paddingVertical: 6, alignItems: 'center', backgroundColor: selectedOversInnings === 1 ? '#10B981' : 'transparent', borderRadius: 8 }}
                                                 onPress={() => setSelectedOversInnings(1)}
                                             >
-                                                <Text style={{ color: selectedOversInnings === 1 ? colors.background : colors.textMuted, fontWeight: '700', fontSize: 13 }}>
+                                                <Text style={{ color: selectedOversInnings === 1 ? colors.background : colors.textMuted, fontWeight: '700', fontSize: 12 }}>
                                                     1st Innings
                                                 </Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity
-                                                style={{ flex: 1, paddingVertical: 8, alignItems: 'center', backgroundColor: selectedOversInnings === 2 ? '#10B981' : 'transparent', borderRadius: 8 }}
+                                                style={{ flex: 1, paddingVertical: 6, alignItems: 'center', backgroundColor: selectedOversInnings === 2 ? '#10B981' : 'transparent', borderRadius: 8 }}
                                                 onPress={() => setSelectedOversInnings(2)}
                                             >
-                                                <Text style={{ color: selectedOversInnings === 2 ? colors.background : colors.textMuted, fontWeight: '700', fontSize: 13 }}>
+                                                <Text style={{ color: selectedOversInnings === 2 ? colors.background : colors.textMuted, fontWeight: '700', fontSize: 12 }}>
                                                     2nd Innings
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
                                     )}
 
-                                    {/* All Overs list for selected innings with Hide/Show toggle (Default: Hidden) */}
                                     {(() => {
                                         const currentInningsOvers = allOversHistory.filter((o: any) => o.innings === (currentInnings > 1 || allOversHistory.some((o: any) => o.innings === 2) ? selectedOversInnings : 1));
                                         const isAllExpanded = currentInningsOvers.length > 0 && currentInningsOvers.every((o: any) => !!expandedOvers[`${o.innings}-${o.overNumber}`]);
@@ -2122,27 +2074,26 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                         if (currentInningsOvers.length === 0) {
                                             return (
                                                 <View style={{ padding: 40, alignItems: 'center' }}>
-                                                    <Ionicons name="baseball-outline" size={48} color={colors.inputPlaceholder} style={{ marginBottom: 12 }} />
-                                                    <Text style={{ fontSize: 15, color: colors.textMuted, fontWeight: '600' }}>No overs bowled yet in this innings</Text>
+                                                    <Ionicons name="baseball-outline" size={40} color={colors.inputPlaceholder} style={{ marginBottom: 10 }} />
+                                                    <Text style={{ fontSize: 14, color: colors.textMuted, fontWeight: '600' }}>No overs bowled yet in this innings</Text>
                                                 </View>
                                             );
                                         }
 
                                         return (
                                             <>
-                                                {/* Expand / Collapse All Bar */}
-                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingHorizontal: 4 }}>
-                                                    <Text style={{ fontSize: 12, fontWeight: '700', color: colors.textMuted, letterSpacing: 0.5 }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, paddingHorizontal: 2 }}>
+                                                    <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, letterSpacing: 0.5 }}>
                                                         {currentInningsOvers.length} OVERS BOWLED
                                                     </Text>
                                                     <TouchableOpacity
                                                         onPress={() => toggleExpandAllOvers(currentInningsOvers)}
-                                                        style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.card, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: colors.cardBorder }}
+                                                        style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.card, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: colors.cardBorder }}
                                                     >
                                                         <Text style={{ fontSize: 11, fontWeight: '700', color: '#10B981' }}>
                                                             {isAllExpanded ? 'Collapse All' : 'Expand All'}
                                                         </Text>
-                                                        <Ionicons name={isAllExpanded ? "chevron-up" : "chevron-down"} size={14} color="#10B981" />
+                                                        <Ionicons name={isAllExpanded ? "chevron-up" : "chevron-down"} size={12} color="#10B981" />
                                                     </TouchableOpacity>
                                                 </View>
 
@@ -2151,56 +2102,47 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                     const isExpanded = !!expandedOvers[overKey];
 
                                                     return (
-                                                        <View key={oIdx} style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: isExpanded ? 'rgba(16, 185, 129, 0.3)' : colors.cardBorder, borderRadius: 14, padding: 14, marginBottom: 12 }}>
-                                                            {/* Over Card Header with Expand/Collapse Toggle */}
+                                                        <View key={oIdx} style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: isExpanded ? 'rgba(16, 185, 129, 0.3)' : colors.cardBorder, borderRadius: 12, padding: 12, marginBottom: 10 }}>
                                                             <TouchableOpacity
                                                                 onPress={() => toggleOverExpand(overKey)}
                                                                 activeOpacity={0.7}
-                                                                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}
+                                                                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}
                                                             >
                                                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                                                    <View style={{ backgroundColor: '#10B981', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
-                                                                        <Text style={{ fontSize: 12, fontWeight: '800', color: colors.background }}>Over {over.overNumber}</Text>
+                                                                    <View style={{ backgroundColor: '#10B981', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                                                                        <Text style={{ fontSize: 11, fontWeight: '800', color: colors.background }}>Over {over.overNumber}</Text>
                                                                     </View>
-                                                                    <Text style={{ fontSize: 13, fontWeight: '600', color: colors.textSecondary }}>{over.bowlerName || 'Bowler'}</Text>
+                                                                    <Text style={{ fontSize: 12, fontWeight: '600', color: colors.textSecondary }}>{over.bowlerName || 'Bowler'}</Text>
                                                                 </View>
-                                                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                                                    <Text style={{ fontSize: 14, fontWeight: '800', color: '#10B981' }}>{over.totalRuns} Runs</Text>
-                                                                    <Ionicons name={isExpanded ? "chevron-up-circle" : "chevron-down-circle-outline"} size={20} color={isExpanded ? "#10B981" : colors.textMuted} />
+                                                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                                                    <Text style={{ fontSize: 13, fontWeight: '800', color: '#10B981' }}>{over.totalRuns} Runs</Text>
+                                                                    <Ionicons name={isExpanded ? "chevron-up-circle" : "chevron-down-circle-outline"} size={18} color={isExpanded ? "#10B981" : colors.textMuted} />
                                                                 </View>
                                                             </TouchableOpacity>
 
-                                                            {/* Circle Badges Row (THIS OVER System Style) */}
-                                                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: isExpanded ? 10 : 0, flexWrap: 'wrap' }}>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: isExpanded ? 8 : 0, flexWrap: 'wrap' }}>
                                                                 {over.balls.map((ball: any, bIdx: number) => {
-                                                                    const rawStr = typeof ball === 'string' ? ball : (ball.circleText || `${ball.runs || 0}`);
-                                                                    const parsed = parseBallData(rawStr);
-                                                                    const circleText = parsed.circleText;
-                                                                    const runs = parsed.runs;
-                                                                    const extraType = parsed.extraType;
-                                                                    const isW = parsed.isWicket || ball.isWicket;
+                                                                    const displayCircle = ball.circleText || '•';
+                                                                    const sub = ball.subText;
 
                                                                     let badgeBgStyle = styles.badgeNeutral;
                                                                     let textStyle = styles.badgeTextNeutral;
 
-                                                                    if (isW) {
+                                                                    if (ball.isWicket) {
                                                                         badgeBgStyle = styles.badgeWicket;
                                                                         textStyle = styles.badgeTextWicket;
-                                                                    } else if (runs === 6 || ball.runs === 6 || rawStr === '6') {
+                                                                    } else if (ball.runs === 6) {
                                                                         badgeBgStyle = styles.badgeSix;
                                                                         textStyle = styles.badgeTextSix;
-                                                                    } else if (runs === 4 || ball.runs === 4 || rawStr === '4') {
+                                                                    } else if (ball.runs === 4) {
                                                                         badgeBgStyle = styles.badgeFour;
                                                                         textStyle = styles.badgeTextFour;
                                                                     }
 
-                                                                    const displayCircle = (circleText === '0' || circleText === '•') ? '•' : (isW ? 'W' : circleText);
-                                                                    const sub = ball.subText || extraType;
-
                                                                     return (
                                                                         <View key={bIdx} style={styles.ballColumn}>
                                                                             <View style={[styles.ballBadge, badgeBgStyle]}>
-                                                                                <Text style={[styles.ballBadgeText, textStyle, displayCircle === '•' && { fontSize: 16, lineHeight: 18 }]}>
+                                                                                <Text style={[styles.ballBadgeText, textStyle, displayCircle === '•' && { fontSize: 14, lineHeight: 16 }]}>
                                                                                     {displayCircle}
                                                                                 </Text>
                                                                             </View>
@@ -2214,9 +2156,8 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                                 })}
                                                             </View>
 
-                                                            {/* Detailed Ball-by-Ball List: Hidden by Default, Shown when Expanded */}
                                                             {isExpanded && (
-                                                                <View style={{ backgroundColor: 'rgba(0,0,0,0.25)', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6, marginTop: 4 }}>
+                                                                <View style={{ backgroundColor: colors.background, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, marginTop: 4 }}>
                                                                     {over.balls.map((ball: any, bIdx: number) => {
                                                                         const bBowler = ball.bowlerName || over.bowlerName || bowlerStats?.name || 'Bowler';
                                                                         const bStriker = ball.strikerName || strikerStats?.name || 'Striker';
@@ -2225,11 +2166,11 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
                                                                         const eventText = ball.isWicket ? 'Wicket' : (ball.circleText === '0' ? 'dot ball' : `${ball.circleText} runs`);
 
                                                                         return (
-                                                                            <View key={bIdx} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: bIdx < over.balls.length - 1 ? 1 : 0, borderBottomColor: colors.card }}>
-                                                                                <Text style={{ fontSize: 13, color: colors.textPrimary, fontWeight: '600' }}>
+                                                                            <View key={bIdx} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 5, borderBottomWidth: bIdx < over.balls.length - 1 ? 1 : 0, borderBottomColor: colors.divider }}>
+                                                                                <Text style={{ fontSize: 12, color: colors.textPrimary, fontWeight: '600' }}>
                                                                                     {bowlerShort} to {strikerShort}
                                                                                 </Text>
-                                                                                <Text style={{ fontSize: 12, fontWeight: '700', color: ball.isWicket ? '#EF4444' : (ball.circleText === '6' || ball.circleText === '4' ? '#10B981' : colors.textSecondary) }}>
+                                                                                <Text style={{ fontSize: 11, fontWeight: '700', color: ball.isWicket ? '#EF4444' : (ball.circleText === '6' || ball.circleText === '4' ? '#10B981' : colors.textSecondary) }}>
                                                                                     {ball.circleText} ({eventText})
                                                                                 </Text>
                                                                             </View>
@@ -2258,88 +2199,87 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
 
     // Header
-    header: { backgroundColor: colors.background, paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.divider },
-    backButton: { marginRight: 15, paddingVertical: 5, paddingRight: 10 },
-    headerIcon: { color: colors.textPrimary, fontSize: 24, fontWeight: 'bold' },
-    headerTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: '800', letterSpacing: 0.5 },
-    headerSubtitle: { fontWeight: 'normal', fontSize: 14 },
+    header: { backgroundColor: colors.card, paddingHorizontal: 14, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.cardBorder },
+    headerTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '800', letterSpacing: 0.5 },
 
-    headerCard: { backgroundColor: colors.card, padding: 14, borderBottomWidth: 1, borderColor: colors.cardBorder },
-    matchTitle: { textAlign: 'center', fontWeight: '600', color: colors.textMuted, fontSize: 11, marginBottom: 6, letterSpacing: 0.5, textTransform: 'uppercase' },
+    // Top Scoreboard Card
+    headerCard: { backgroundColor: colors.card, paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderColor: colors.cardBorder },
+    matchTitle: { textAlign: 'center', fontWeight: '600', color: colors.textMuted, fontSize: 10, marginBottom: 4, letterSpacing: 0.5, textTransform: 'uppercase' },
+    targetBanner: { backgroundColor: colors.accentBg, borderWidth: 1, borderColor: 'rgba(16, 185, 129, 0.3)', borderRadius: 8, paddingVertical: 5, paddingHorizontal: 10, marginBottom: 6, alignItems: 'center' },
+    targetBannerText: { fontSize: 12, fontWeight: '800', color: '#10B981', letterSpacing: 0.2 },
     teamRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    battingTeam: { fontWeight: '700', color: colors.textPrimary, fontSize: 16 },
-    inningsText: { fontSize: 11, color: '#10B981', fontWeight: '600', backgroundColor: colors.accentBg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10, overflow: 'hidden' },
-    scoreRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 6 },
+    battingTeam: { fontWeight: '800', color: colors.textPrimary, fontSize: 15 },
+    inningsText: { fontSize: 10, color: '#10B981', fontWeight: '700', backgroundColor: colors.accentBg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8, overflow: 'hidden' },
+    scoreRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 4 },
     scoreWrapper: { flexDirection: 'row', alignItems: 'baseline' },
-    mainScore: { fontSize: 40, fontWeight: '800', color: colors.textPrimary },
-    slash: { fontSize: 22, color: colors.inputPlaceholder, marginHorizontal: 2 },
-    oversText: { fontSize: 14, fontWeight: '600', color: colors.textSecondary },
-    oversHighlight: { color: '#10B981', fontWeight: '700' },
-    statsBar: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: colors.card, padding: 10, borderRadius: 10, marginTop: 10, borderWidth: 1, borderColor: colors.cardBorder },
-    statsText: { fontSize: 12, color: colors.textSecondary },
+    mainScore: { fontSize: 32, fontWeight: '900', color: colors.textPrimary, letterSpacing: -0.5 },
+    slash: { fontSize: 20, color: colors.inputPlaceholder, marginHorizontal: 2 },
+    targetText: { fontSize: 12, fontWeight: 'bold', color: '#3B82F6', marginBottom: 2 },
+    oversText: { fontSize: 13, fontWeight: '600', color: colors.textSecondary },
+    oversHighlight: { color: '#10B981', fontWeight: '800' },
+    statsBar: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: colors.background, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, marginTop: 8, borderWidth: 1, borderColor: colors.cardBorder },
+    statsText: { fontSize: 11, color: colors.textSecondary },
     statsBold: { color: colors.textPrimary, fontWeight: '700' },
 
-    // Player Stats
-    playerCard: { backgroundColor: colors.card, marginHorizontal: 12, marginTop: 10, borderRadius: 14, padding: 12, borderWidth: 1, borderColor: colors.cardBorder },
-    tableHeader: { flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 4 },
-    thText: { fontSize: 10, color: colors.inputPlaceholder, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase' },
-    tableRow: { flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: colors.card },
-    tdTextBold: { fontSize: 13, fontWeight: '700', color: colors.textPrimary },
-    tdTextNormal: { fontSize: 13, color: colors.textSecondary },
-    tdText: { fontSize: 13, color: colors.textSecondary },
+    // Compact Player Stats Card
+    playerCard: { backgroundColor: colors.card, marginHorizontal: 8, marginTop: 8, borderRadius: 12, padding: 10, borderWidth: 1, borderColor: colors.cardBorder },
+    tableHeader: { flexDirection: 'row', paddingVertical: 4, paddingHorizontal: 2 },
+    thText: { fontSize: 9, color: colors.inputPlaceholder, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase' },
+    tableRow: { flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 2, borderBottomWidth: 1, borderBottomColor: colors.divider },
+    tdTextBold: { fontSize: 12, fontWeight: '700', color: colors.textPrimary },
+    tdTextNormal: { fontSize: 12, color: colors.textSecondary },
+    tdText: { fontSize: 12, color: colors.textSecondary },
 
-    // This Over Timeline
+    // Compact THIS OVER Timeline
     thisOverContainer: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
-        paddingTop: 10,
-        marginTop: 8,
+        alignItems: 'center',
+        paddingTop: 8,
+        marginTop: 6,
         borderTopWidth: 1,
         borderTopColor: colors.divider,
     },
     thisOverLabel: {
-        fontSize: 10,
-        fontWeight: '700',
+        fontSize: 9,
+        fontWeight: '800',
         color: colors.inputPlaceholder,
         letterSpacing: 0.8,
-        marginRight: 10,
-        marginTop: 5,
+        marginRight: 8,
     },
     thisOverList: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
-        gap: 8,
+        alignItems: 'center',
+        gap: 6,
     },
     ballColumn: {
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        minWidth: 28,
+        justifyContent: 'center',
+        minWidth: 26,
     },
     thisOverEmpty: {
-        fontSize: 13,
+        fontSize: 12,
         color: colors.inputPlaceholder,
         fontWeight: '500',
-        marginTop: 4,
     },
     ballBadge: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        width: 26,
+        height: 26,
+        borderRadius: 13,
         alignItems: 'center',
         justifyContent: 'center',
     },
     ballBadgeText: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: 'bold',
     },
     extraLabel: {
-        fontSize: 9,
+        fontSize: 8,
         fontWeight: '800',
-        marginTop: 3,
+        marginTop: 2,
         textAlign: 'center',
     },
     badgeNeutral: {
-        backgroundColor: colors.card,
+        backgroundColor: colors.background,
         borderWidth: 1,
         borderColor: colors.cardBorder,
     },
@@ -2347,12 +2287,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         color: colors.textSecondary,
     },
     badgeFour: {
-        backgroundColor: 'rgba(59,130,246,0.2)',
+        backgroundColor: 'rgba(59,130,246,0.18)',
         borderWidth: 1,
         borderColor: 'rgba(59,130,246,0.4)',
     },
     badgeTextFour: {
-        color: '#60A5FA',
+        color: '#3B82F6',
     },
     badgeSix: {
         backgroundColor: '#10B981',
@@ -2371,40 +2311,190 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         color: '#FFFFFF',
     },
 
-    modifierGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12, gap: 8, marginBottom: 12 },
-    modButton: { flex: 1, minWidth: '20%', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.cardBorder, paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
-    modButtonActive: { backgroundColor: 'rgba(59,130,246,0.15)', borderColor: 'rgba(59,130,246,0.4)' },
-    modBtnText: { color: colors.textSecondary, fontSize: 13, fontWeight: '600' },
-    modBtnTextActive: { color: '#60A5FA', fontWeight: 'bold' },
-    actionButton: { flex: 1, minWidth: '20%', backgroundColor: colors.card, paddingVertical: 10, borderRadius: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.cardBorder },
-    actionBtnText: { color: colors.textSecondary, fontSize: 13, fontWeight: '600' },
-    wicketButton: { flex: 2, minWidth: '45%', backgroundColor: '#EF4444', paddingVertical: 10, borderRadius: 10, alignItems: 'center', elevation: 2 },
-    wicketBtnText: { color: 'white', fontSize: 13, fontWeight: 'bold', letterSpacing: 0.5 },
+    // FIXED BOTTOM SECTION CONTROLS
+    bottomControlsContainer: {
+        backgroundColor: colors.card,
+        borderTopWidth: 1,
+        borderTopColor: colors.cardBorder,
+        paddingHorizontal: 10,
+        paddingTop: 8,
+        paddingBottom: 12,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -3 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+    },
 
-    keypadGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12, gap: 8, paddingBottom: 100 },
-    keyButton: { width: '22.5%', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.cardBorder, paddingVertical: 16, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-    keyText: { color: colors.textSecondary, fontSize: 13, fontWeight: '600' },
-    keyTextLarge: { color: colors.textPrimary, fontSize: 20, fontWeight: 'bold' },
+    // 1. Extras Row
+    extrasRow: {
+        flexDirection: 'row',
+        gap: 6,
+        marginBottom: 6,
+    },
+    extraPill: {
+        flex: 1,
+        backgroundColor: colors.background,
+        borderWidth: 1,
+        borderColor: colors.cardBorder,
+        paddingVertical: 7,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    extraPillActive: {
+        backgroundColor: 'rgba(59,130,246,0.18)',
+        borderColor: '#3B82F6',
+    },
+    extraPillText: {
+        color: colors.textSecondary,
+        fontSize: 11,
+        fontWeight: '700',
+        letterSpacing: 0.3,
+    },
+    extraPillTextActive: {
+        color: '#3B82F6',
+        fontWeight: '800',
+    },
+
+    // 2. Utility Row
+    utilityRow: {
+        flexDirection: 'row',
+        gap: 6,
+        marginBottom: 8,
+    },
+    utilityBtn: {
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: colors.background,
+        borderWidth: 1,
+        borderColor: colors.cardBorder,
+        paddingVertical: 7,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    utilityBtnText: {
+        color: colors.textSecondary,
+        fontSize: 11,
+        fontWeight: '600',
+    },
+
+    // 3. Run Keypad & Wicket Grid
+    keypadContainer: {
+        gap: 6,
+    },
+    keypadRow: {
+        flexDirection: 'row',
+        gap: 6,
+    },
+    runKey: {
+        flex: 1,
+        height: 44,
+        backgroundColor: colors.background,
+        borderWidth: 1,
+        borderColor: colors.cardBorder,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 1,
+    },
+    runKeyText: {
+        color: colors.textPrimary,
+        fontSize: 18,
+        fontWeight: '800',
+    },
+    fourKey: {
+        backgroundColor: 'rgba(59,130,246,0.12)',
+        borderColor: 'rgba(59,130,246,0.3)',
+    },
+    fourKeyText: {
+        color: '#3B82F6',
+    },
+    sixKey: {
+        backgroundColor: '#10B981',
+        borderColor: '#059669',
+    },
+    sixKeyText: {
+        color: '#FFFFFF',
+    },
+    wicketKey: {
+        flex: 1,
+        height: 44,
+        backgroundColor: '#EF4444',
+        borderColor: '#DC2626',
+        borderWidth: 1,
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 3,
+        shadowColor: '#EF4444',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+    },
+    wicketKeyText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '900',
+        letterSpacing: 0.5,
+    },
+
+    matchCompleteRow: {
+        flexDirection: 'row',
+        gap: 10,
+        paddingVertical: 4,
+    },
+    undoMatchBtn: {
+        flex: 1,
+        backgroundColor: colors.card,
+        borderWidth: 1,
+        borderColor: colors.cardBorder,
+        paddingVertical: 12,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    undoMatchBtnText: {
+        color: colors.textSecondary,
+        fontSize: 14,
+        fontWeight: '700',
+    },
+    endMatchBtn: {
+        flex: 2,
+        backgroundColor: '#EF4444',
+        paddingVertical: 12,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 3,
+    },
+    endMatchBtnText: {
+        color: 'white',
+        fontSize: 15,
+        fontWeight: '800',
+    },
 
     // Modals
     modalOverlay: { flex: 1, backgroundColor: colors.modalOverlay, justifyContent: 'center', alignItems: 'center' },
-    modalContainer: { backgroundColor: '#111827', width: '85%', maxWidth: 360, borderRadius: 16, overflow: 'hidden', elevation: 5, borderWidth: 1, borderColor: colors.cardBorder },
-    modalHeader: { padding: 16, borderBottomWidth: 1, borderBottomColor: colors.divider, backgroundColor: colors.card },
-    modalTitle: { fontSize: 18, fontWeight: '700', color: colors.textPrimary, textAlign: 'center' },
-    modalContent: { padding: 20 },
-    modalLabel: { fontSize: 14, color: colors.textSecondary, fontWeight: '500', marginBottom: 10 },
-    modalInput: { borderBottomWidth: 2, borderBottomColor: '#10B981', fontSize: 16, color: colors.textPrimary, paddingVertical: 8, marginBottom: 20 },
-    saveBtn: { backgroundColor: '#10B981', padding: 14, borderRadius: 12, alignItems: 'center' },
-    saveBtnText: { color: colors.background, fontWeight: '800', fontSize: 16 },
+    modalContainer: { backgroundColor: colors.card, width: '85%', maxWidth: 360, borderRadius: 16, overflow: 'hidden', elevation: 5, borderWidth: 1, borderColor: colors.cardBorder },
+    modalHeader: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.divider, backgroundColor: colors.card },
+    modalTitle: { fontSize: 16, fontWeight: '800', color: colors.textPrimary, textAlign: 'center' },
+    modalContent: { padding: 16 },
+    modalLabel: { fontSize: 13, color: colors.textSecondary, fontWeight: '500', marginBottom: 8 },
+    modalInput: { borderBottomWidth: 2, borderBottomColor: '#10B981', fontSize: 15, color: colors.textPrimary, paddingVertical: 6, marginBottom: 16 },
+    saveBtn: { backgroundColor: '#10B981', padding: 12, borderRadius: 10, alignItems: 'center' },
+    saveBtnText: { color: colors.background, fontWeight: '800', fontSize: 15 },
 
-    modalChipContainer: { marginTop: 4, marginBottom: 16 },
-    modalChipLabel: { fontSize: 10, color: colors.inputPlaceholder, marginBottom: 6, fontWeight: '700', letterSpacing: 0.8 },
-    modalChip: { backgroundColor: colors.card, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: colors.cardBorder },
+    modalChipContainer: { marginTop: 4, marginBottom: 14 },
+    modalChipLabel: { fontSize: 10, color: colors.inputPlaceholder, marginBottom: 4, fontWeight: '700', letterSpacing: 0.8 },
+    modalChip: { backgroundColor: colors.card, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 14, borderWidth: 1, borderColor: colors.cardBorder },
     modalChipActive: { backgroundColor: '#10B981', borderColor: '#10B981' },
-    modalChipText: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
+    modalChipText: { fontSize: 11, color: colors.textSecondary, fontWeight: '500' },
     modalChipTextActive: { color: colors.background, fontWeight: 'bold' },
 
-    // Floating Extra Card
+    // Floating Card
     floatingCardContainer: {
         position: 'absolute',
         top: 0,
@@ -2416,9 +2506,9 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         zIndex: 1000,
     },
     floatingCard: {
-        backgroundColor: '#111827',
+        backgroundColor: colors.card,
         width: '90%',
-        maxWidth: 380,
+        maxWidth: 360,
         borderRadius: 18,
         overflow: 'hidden',
         elevation: 5,
@@ -2430,68 +2520,20 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         borderColor: colors.cardBorder,
     },
     floatingCardHeader: {
-        paddingVertical: 16,
-        paddingHorizontal: 20,
+        paddingVertical: 14,
+        paddingHorizontal: 18,
         borderBottomWidth: 1,
         borderBottomColor: colors.divider,
         backgroundColor: colors.card,
         alignItems: 'center',
     },
     floatingCardTitle: {
-        fontSize: 18,
-        fontWeight: '700',
+        fontSize: 16,
+        fontWeight: '800',
         color: colors.textPrimary,
         textAlign: 'center',
     },
     floatingCardContent: {
-        padding: 20,
-    },
-    extraRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 6,
-        marginBottom: 20,
-    },
-    extraRunButton: {
-        flex: 1,
-        paddingVertical: 12,
-        backgroundColor: colors.card,
-        borderWidth: 1,
-        borderColor: colors.cardBorder,
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    extraRunButtonFour: {
-        backgroundColor: 'rgba(59,130,246,0.15)',
-        borderColor: 'rgba(59,130,246,0.3)',
-    },
-    extraRunButtonSix: {
-        backgroundColor: '#10B981',
-        borderColor: '#059669',
-    },
-    extraRunText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: colors.textPrimary,
-    },
-    extraRunTextFour: {
-        color: '#60A5FA',
-    },
-    extraRunTextSix: {
-        color: '#FFFFFF',
-    },
-    extraCancelBtn: {
-        backgroundColor: colors.card,
-        paddingVertical: 12,
-        borderRadius: 10,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: colors.cardBorder,
-    },
-    extraCancelBtnText: {
-        color: colors.textSecondary,
-        fontWeight: 'bold',
-        fontSize: 15,
+        padding: 18,
     },
 });
