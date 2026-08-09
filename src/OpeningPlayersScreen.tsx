@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, ThemeColors } from './ThemeContext';
+import AutocompleteInput from './AutocompleteInput';
 
 interface OpeningPlayersScreenProps {
     battingTeam: string;
@@ -20,8 +21,8 @@ export default function OpeningPlayersScreen({
     onStartScoring,
     onBack
 }: OpeningPlayersScreenProps) {
-  const { colors, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+    const { colors, isDark } = useTheme();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     const [strikerName, setStrikerName] = useState(battingSquad[0] || '');
     const [nonStrikerName, setNonStrikerName] = useState(battingSquad[1] || '');
     const [bowlerName, setBowlerName] = useState(bowlingSquad[0] || '');
@@ -41,21 +42,20 @@ export default function OpeningPlayersScreen({
                 </View>
             </View>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <ScrollView style={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
 
                 {/* Batting Section */}
                 <View style={styles.sectionHeader}>
                     <Ionicons name="baseball-outline" size={16} color="#10B981" />
                     <Text style={styles.sectionTitle}>{battingTeam} — Batting</Text>
                 </View>
-                <View style={styles.card}>
-                    <Text style={styles.inputLabel}>Striker</Text>
-                    <TextInput
-                        style={styles.inputField}
+                <View style={[styles.card, { zIndex: 10 }]}>
+                    <AutocompleteInput
+                        inputLabel="Striker"
                         placeholder="Enter striker name"
                         value={strikerName}
                         onChangeText={setStrikerName}
-                        placeholderTextColor={colors.inputPlaceholder}
+                        suggestions={battingSquad}
                     />
 
                     {battingSquad.length > 0 && (
@@ -77,13 +77,12 @@ export default function OpeningPlayersScreen({
 
                     <View style={styles.fieldDivider} />
 
-                    <Text style={styles.inputLabel}>Non-Striker</Text>
-                    <TextInput
-                        style={styles.inputField}
+                    <AutocompleteInput
+                        inputLabel="Non-Striker"
                         placeholder="Enter non-striker name"
                         value={nonStrikerName}
                         onChangeText={setNonStrikerName}
-                        placeholderTextColor={colors.inputPlaceholder}
+                        suggestions={battingSquad}
                     />
 
                     {battingSquad.length > 0 && (
@@ -109,14 +108,13 @@ export default function OpeningPlayersScreen({
                     <Ionicons name="ellipse-outline" size={16} color="#3B82F6" />
                     <Text style={styles.sectionTitle}>{bowlingTeam} — Bowling</Text>
                 </View>
-                <View style={styles.card}>
-                    <Text style={styles.inputLabel}>Opening Bowler</Text>
-                    <TextInput
-                        style={styles.inputField}
+                <View style={[styles.card, { zIndex: 5 }]}>
+                    <AutocompleteInput
+                        inputLabel="Opening Bowler"
                         placeholder="Enter bowler name"
                         value={bowlerName}
                         onChangeText={setBowlerName}
-                        placeholderTextColor={colors.inputPlaceholder}
+                        suggestions={bowlingSquad}
                     />
 
                     {bowlingSquad.length > 0 && (
@@ -188,29 +186,13 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.cardBorder,
     },
-    inputLabel: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: colors.textMuted,
-        marginBottom: 6,
-        letterSpacing: 0.5,
-        textTransform: 'uppercase',
-    },
-    inputField: {
-        borderBottomWidth: 1,
-        borderBottomColor: colors.divider,
-        paddingVertical: 10,
-        marginBottom: 8,
-        fontSize: 15,
-        color: colors.textPrimary,
-    },
     fieldDivider: {
         height: 1,
         backgroundColor: colors.card,
         marginVertical: 12,
     },
 
-    chipContainer: { marginTop: 6, marginBottom: 4 },
+    chipContainer: { marginTop: 10, marginBottom: 4 },
     chipLabel: {
         fontSize: 10,
         color: colors.inputPlaceholder,

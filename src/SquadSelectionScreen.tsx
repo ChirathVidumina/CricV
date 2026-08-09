@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, ThemeColors } from './ThemeContext';
+import AutocompleteInput from './AutocompleteInput';
 
 interface SquadSelectionScreenProps {
     battingTeam: string;
@@ -279,7 +280,7 @@ export default function SquadSelectionScreen({
                     },
                 ]}
             >
-                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                     {/* Compact Player Slots */}
                     <View style={styles.squadCard}>
                         {currentSquad.map((player, idx) => (
@@ -287,12 +288,13 @@ export default function SquadSelectionScreen({
                                 <View style={styles.playerNumBadge}>
                                     <Text style={styles.playerNumText}>{idx + 1}</Text>
                                 </View>
-                                <TextInput
-                                    style={styles.playerInput}
+                                <AutocompleteInput
+                                    containerStyle={{ flex: 1 }}
+                                    inputStyle={styles.playerInput}
                                     placeholder={`Player ${idx + 1}`}
-                                    placeholderTextColor={colors.inputPlaceholder}
                                     value={player}
                                     onChangeText={(val) => handlePlayerChange(activeTeamTab, idx, val)}
+                                    suggestions={activeTeamTab === 'batting' ? DEFAULT_BATTING_SQUAD : DEFAULT_BOWLING_SQUAD}
                                 />
                                 {currentSquad.length > 2 && (
                                     <TouchableOpacity
