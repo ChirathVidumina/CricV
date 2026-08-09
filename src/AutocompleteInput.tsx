@@ -27,6 +27,7 @@ interface AutocompleteInputProps {
     onChangeText: (text: string) => void;
     placeholder?: string;
     suggestions: SuggestionItem[];
+    excludeNames?: string[];
     containerStyle?: StyleProp<ViewStyle>;
     inputStyle?: StyleProp<TextStyle>;
     inputLabel?: string;
@@ -37,6 +38,7 @@ export default function AutocompleteInput({
     onChangeText,
     placeholder = 'Enter player name',
     suggestions = [],
+    excludeNames = [],
     containerStyle,
     inputStyle,
     inputLabel,
@@ -47,7 +49,7 @@ export default function AutocompleteInput({
     // Normalize suggestion items into unified format
     const normalizedSuggestions = suggestions.map(item => {
         if (typeof item === 'string') {
-            return { fullName: item, effectiveName: item };
+            return { fullName: item, effectiveName: item, displayName: undefined };
         }
         const effectiveName = item.displayName && item.displayName.trim() ? item.displayName.trim() : item.fullName;
         return {
@@ -56,13 +58,25 @@ export default function AutocompleteInput({
         };
     });
 
-    // Filter suggestions based on typed input
+    const normalizedExclude = excludeNames.map(n => n.trim().toLowerCase()).filter(n => n !== '');
+
+    // Filter suggestions based on typed input and excludeNames
     const query = value.trim().toLowerCase();
     const filteredSuggestions = query.length === 0
         ? []
         : normalizedSuggestions.filter(item => {
-            const matchesFullName = item.fullName.toLowerCase().includes(query);
-            const matchesDisplayName = item.displayName ? item.displayName.toLowerCase().includes(query) : false;
+            const fullLower = item.fullName.toLowerCase();
+            const displayLower = item.displayName ? item.displayName.toLowerCase() : '';
+            const effectiveLower = item.effectiveName.toLowerCase();
+
+            // Exclude if player is already selected in excludeNames list
+            const isExcluded = normalizedExclude.some(ex =>
+                ex === fullLower || ex === displayLower || ex === effectiveLower
+            );
+            if (isExcluded) return false;
+
+            const matchesFullName = fullLower.includes(query);
+            const matchesDisplayName = displayLower ? displayLower.includes(query) : false;
             return matchesFullName || matchesDisplayName;
         });
 

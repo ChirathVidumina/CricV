@@ -97,6 +97,7 @@ export default function OpeningPlayersScreen({
                         value={strikerName}
                         onChangeText={setStrikerName}
                         suggestions={battingSuggestions}
+                        excludeNames={[nonStrikerName].filter(n => n && n.trim() !== '')}
                     />
 
                     {battingSquad.length > 0 && (
@@ -124,6 +125,7 @@ export default function OpeningPlayersScreen({
                         value={nonStrikerName}
                         onChangeText={setNonStrikerName}
                         suggestions={battingSuggestions}
+                        excludeNames={[strikerName].filter(n => n && n.trim() !== '')}
                     />
 
                     {battingSquad.length > 0 && (

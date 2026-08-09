@@ -323,29 +323,33 @@ export default function SquadSelectionScreen({
                 <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                     {/* Compact Player Slots */}
                     <View style={styles.squadCard}>
-                        {currentSquad.map((player, idx) => (
-                            <View key={idx} style={styles.playerRow}>
-                                <View style={styles.playerNumBadge}>
-                                    <Text style={styles.playerNumText}>{idx + 1}</Text>
+                        {currentSquad.map((player, idx) => {
+                            const excludeNames = currentSquad.filter((_, i) => i !== idx).filter(name => name && name.trim() !== '');
+                            return (
+                                <View key={idx} style={styles.playerRow}>
+                                    <View style={styles.playerNumBadge}>
+                                        <Text style={styles.playerNumText}>{idx + 1}</Text>
+                                    </View>
+                                    <AutocompleteInput
+                                        containerStyle={{ flex: 1 }}
+                                        inputStyle={styles.playerInput}
+                                        placeholder={`Player ${idx + 1}`}
+                                        value={player}
+                                        onChangeText={(val) => handlePlayerChange(activeTeamTab, idx, val)}
+                                        suggestions={activeTeamTab === 'batting' ? battingSuggestions : bowlingSuggestions}
+                                        excludeNames={excludeNames}
+                                    />
+                                    {currentSquad.length > 2 && (
+                                        <TouchableOpacity
+                                            style={styles.removeSlotBtn}
+                                            onPress={() => handleRemoveSlot(activeTeamTab, idx)}
+                                        >
+                                            <Ionicons name="close-circle" size={16} color={colors.inputPlaceholder} />
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
-                                <AutocompleteInput
-                                    containerStyle={{ flex: 1 }}
-                                    inputStyle={styles.playerInput}
-                                    placeholder={`Player ${idx + 1}`}
-                                    value={player}
-                                    onChangeText={(val) => handlePlayerChange(activeTeamTab, idx, val)}
-                                    suggestions={activeTeamTab === 'batting' ? battingSuggestions : bowlingSuggestions}
-                                />
-                                {currentSquad.length > 2 && (
-                                    <TouchableOpacity
-                                        style={styles.removeSlotBtn}
-                                        onPress={() => handleRemoveSlot(activeTeamTab, idx)}
-                                    >
-                                        <Ionicons name="close-circle" size={16} color={colors.inputPlaceholder} />
-                                    </TouchableOpacity>
-                                )}
-                            </View>
-                        ))}
+                            );
+                        })}
 
                         <TouchableOpacity
                             style={styles.addSlotBtn}
