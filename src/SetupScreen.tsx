@@ -13,6 +13,7 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
     const [toss, setToss] = useState('host');
     const [opted, setOpted] = useState('bat');
     const [overs, setOvers] = useState('20');
+    const [isOversFocused, setIsOversFocused] = useState(false);
 
     // Advanced Settings State
     const [isAdvancedExpanded, setIsAdvancedExpanded] = useState(false);
@@ -153,32 +154,76 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
                 {/* Total Overs Section */}
                 <Text style={{ color: colors.textMuted, fontWeight: '700', fontSize: 10, letterSpacing: 1, marginBottom: 4, marginTop: 2 }}>TOTAL OVERS</Text>
                 <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: colors.cardBorder }}>
-                    {/* Centered Manual Edit Row (+ / - buttons close to central TextInput) */}
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, paddingVertical: 4 }}>
-                        <TouchableOpacity style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.buttonBg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.cardBorder }} onPress={handleDecrementOvers}>
+                    {/* Centered Modern Stepper Control Row */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 12, paddingVertical: 4 }}>
+                        <TouchableOpacity
+                            style={{
+                                width: 38,
+                                height: 38,
+                                borderRadius: 19,
+                                backgroundColor: colors.buttonBg,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderWidth: 1,
+                                borderColor: colors.cardBorder,
+                            }}
+                            onPress={handleDecrementOvers}
+                        >
                             <Ionicons name="remove" size={18} color={colors.textPrimary} />
                         </TouchableOpacity>
 
-                        <TextInput
+                        {/* Interactive Focused Box for TextInput */}
+                        <View
                             style={{
-                                fontSize: 26,
-                                fontWeight: '800',
-                                color: colors.textPrimary,
-                                minWidth: 64,
-                                textAlign: 'center',
-                                paddingVertical: 0,
-                                paddingHorizontal: 4,
-                                backgroundColor: 'transparent',
+                                width: 64,
+                                height: 48,
+                                borderRadius: 10,
+                                backgroundColor: colors.background,
+                                borderWidth: 1.5,
+                                borderColor: isOversFocused ? colors.accent : colors.cardBorder,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                elevation: isOversFocused ? 2 : 0,
+                                shadowColor: colors.accent,
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: isOversFocused ? 0.25 : 0,
+                                shadowRadius: 4,
                             }}
-                            value={overs}
-                            onChangeText={handleOversChangeText}
-                            keyboardType="numeric"
-                            maxLength={3}
-                            textAlign="center"
-                            selectTextOnFocus
-                        />
+                        >
+                            <TextInput
+                                style={{
+                                    fontSize: 24,
+                                    fontWeight: '800',
+                                    color: isOversFocused ? colors.accent : colors.textPrimary,
+                                    width: '100%',
+                                    textAlign: 'center',
+                                    paddingVertical: 0,
+                                    paddingHorizontal: 0,
+                                }}
+                                value={overs}
+                                onChangeText={handleOversChangeText}
+                                onFocus={() => setIsOversFocused(true)}
+                                onBlur={() => setIsOversFocused(false)}
+                                keyboardType="numeric"
+                                maxLength={3}
+                                textAlign="center"
+                                selectTextOnFocus
+                            />
+                        </View>
 
-                        <TouchableOpacity style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.buttonBg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.cardBorder }} onPress={handleIncrementOvers}>
+                        <TouchableOpacity
+                            style={{
+                                width: 38,
+                                height: 38,
+                                borderRadius: 19,
+                                backgroundColor: colors.buttonBg,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderWidth: 1,
+                                borderColor: colors.cardBorder,
+                            }}
+                            onPress={handleIncrementOvers}
+                        >
                             <Ionicons name="add" size={18} color={colors.textPrimary} />
                         </TouchableOpacity>
                     </View>
