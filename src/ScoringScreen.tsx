@@ -1240,8 +1240,8 @@ export default function ScoringScreen({ players, settings, onBack, navigation, o
 
                         {/* Run Row B: 4, 5, 6, WICKET */}
                         <View style={styles.keypadRow}>
-                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(4)}>
-                                <Text style={styles.runKeyText}>4</Text>
+                            <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, styles.fourKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(4)}>
+                                <Text style={[styles.runKeyText, styles.fourKeyText]}>4</Text>
                             </TouchableOpacity>
                             <TouchableOpacity disabled={isInningsComplete} style={[styles.runKey, isInningsComplete && { opacity: 0.4 }]} onPress={() => handlePressRun(5)}>
                                 <Text style={styles.runKeyText}>5</Text>
@@ -2403,6 +2403,13 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         color: colors.textPrimary,
         fontSize: 18,
         fontWeight: '800',
+    },
+    fourKey: {
+        backgroundColor: '#2563EB',
+        borderColor: '#1D4ED8',
+    },
+    fourKeyText: {
+        color: '#FFFFFF',
     },
     sixKey: {
         backgroundColor: '#10B981',
