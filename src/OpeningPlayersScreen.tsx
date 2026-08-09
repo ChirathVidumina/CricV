@@ -1,0 +1,263 @@
+import React, { useState, useMemo } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme, ThemeColors } from './ThemeContext';
+
+interface OpeningPlayersScreenProps {
+    battingTeam: string;
+    bowlingTeam: string;
+    battingSquad?: string[];
+    bowlingSquad?: string[];
+    onStartScoring: (players: { striker: string; nonStriker: string; bowler: string }) => void;
+    onBack: () => void;
+}
+
+export default function OpeningPlayersScreen({
+    battingTeam,
+    bowlingTeam,
+    battingSquad = [],
+    bowlingSquad = [],
+    onStartScoring,
+    onBack
+}: OpeningPlayersScreenProps) {
+  const { colors, isDark } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+    const [strikerName, setStrikerName] = useState(battingSquad[0] || '');
+    const [nonStrikerName, setNonStrikerName] = useState(battingSquad[1] || '');
+    const [bowlerName, setBowlerName] = useState(bowlingSquad[0] || '');
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle={colors.statusBar} backgroundColor={colors.background} />
+
+            {/* Header */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={onBack} style={{ paddingVertical: 4, paddingRight: 12 }}>
+                    <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
+                </TouchableOpacity>
+                <View>
+                    <Text style={styles.headerTitle}>Opening Players</Text>
+                    <Text style={styles.headerSubtitle}>{battingTeam} vs {bowlingTeam}</Text>
+                </View>
+            </View>
+
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+
+                {/* Batting Section */}
+                <View style={styles.sectionHeader}>
+                    <Ionicons name="baseball-outline" size={16} color="#10B981" />
+                    <Text style={styles.sectionTitle}>{battingTeam} — Batting</Text>
+                </View>
+                <View style={styles.card}>
+                    <Text style={styles.inputLabel}>Striker</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Enter striker name"
+                        value={strikerName}
+                        onChangeText={setStrikerName}
+                        placeholderTextColor={colors.inputPlaceholder}
+                    />
+
+                    {battingSquad.length > 0 && (
+                        <View style={styles.chipContainer}>
+                            <Text style={styles.chipLabel}>SELECT FROM SQUAD</Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                                {battingSquad.map((player, idx) => (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        style={[styles.chip, strikerName === player && styles.chipActive]}
+                                        onPress={() => setStrikerName(player)}
+                                    >
+                                        <Text style={[styles.chipText, strikerName === player && styles.chipTextActive]}>{player}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
+
+                    <View style={styles.fieldDivider} />
+
+                    <Text style={styles.inputLabel}>Non-Striker</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Enter non-striker name"
+                        value={nonStrikerName}
+                        onChangeText={setNonStrikerName}
+                        placeholderTextColor={colors.inputPlaceholder}
+                    />
+
+                    {battingSquad.length > 0 && (
+                        <View style={styles.chipContainer}>
+                            <Text style={styles.chipLabel}>SELECT FROM SQUAD</Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                                {battingSquad.map((player, idx) => (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        style={[styles.chip, nonStrikerName === player && styles.chipActive]}
+                                        onPress={() => setNonStrikerName(player)}
+                                    >
+                                        <Text style={[styles.chipText, nonStrikerName === player && styles.chipTextActive]}>{player}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
+                </View>
+
+                {/* Bowling Section */}
+                <View style={styles.sectionHeader}>
+                    <Ionicons name="ellipse-outline" size={16} color="#3B82F6" />
+                    <Text style={styles.sectionTitle}>{bowlingTeam} — Bowling</Text>
+                </View>
+                <View style={styles.card}>
+                    <Text style={styles.inputLabel}>Opening Bowler</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Enter bowler name"
+                        value={bowlerName}
+                        onChangeText={setBowlerName}
+                        placeholderTextColor={colors.inputPlaceholder}
+                    />
+
+                    {bowlingSquad.length > 0 && (
+                        <View style={styles.chipContainer}>
+                            <Text style={styles.chipLabel}>SELECT FROM SQUAD</Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                                {bowlingSquad.map((player, idx) => (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        style={[styles.chip, bowlerName === player && styles.chipActive]}
+                                        onPress={() => setBowlerName(player)}
+                                    >
+                                        <Text style={[styles.chipText, bowlerName === player && styles.chipTextActive]}>{player}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
+                </View>
+
+                <TouchableOpacity
+                    style={styles.startBtn}
+                    onPress={() => onStartScoring({ striker: strikerName || 'Striker', nonStriker: nonStrikerName || 'Non-Striker', bowler: bowlerName || 'Bowler' })}
+                >
+                    <Ionicons name="play" size={18} color={colors.background} style={{ marginRight: 8 }} />
+                    <Text style={styles.startBtnText}>Start Scoring</Text>
+                </TouchableOpacity>
+
+            </ScrollView>
+        </SafeAreaView>
+    );
+}
+
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+
+    header: {
+        paddingHorizontal: 20,
+        paddingTop: 16,
+        paddingBottom: 14,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: colors.divider,
+    },
+    headerTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: '700' },
+    headerSubtitle: { color: colors.textMuted, fontSize: 12, marginTop: 2 },
+
+    content: { padding: 20 },
+
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 10,
+        marginTop: 4,
+    },
+    sectionTitle: {
+        color: colors.textPrimary,
+        fontWeight: '600',
+        fontSize: 14,
+    },
+
+    card: {
+        backgroundColor: colors.card,
+        borderRadius: 14,
+        padding: 16,
+        marginBottom: 24,
+        borderWidth: 1,
+        borderColor: colors.cardBorder,
+    },
+    inputLabel: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: colors.textMuted,
+        marginBottom: 6,
+        letterSpacing: 0.5,
+        textTransform: 'uppercase',
+    },
+    inputField: {
+        borderBottomWidth: 1,
+        borderBottomColor: colors.divider,
+        paddingVertical: 10,
+        marginBottom: 8,
+        fontSize: 15,
+        color: colors.textPrimary,
+    },
+    fieldDivider: {
+        height: 1,
+        backgroundColor: colors.card,
+        marginVertical: 12,
+    },
+
+    chipContainer: { marginTop: 6, marginBottom: 4 },
+    chipLabel: {
+        fontSize: 10,
+        color: colors.inputPlaceholder,
+        marginBottom: 6,
+        fontWeight: '700',
+        letterSpacing: 0.8,
+    },
+    chip: {
+        backgroundColor: colors.card,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: colors.cardBorder,
+    },
+    chipActive: {
+        backgroundColor: '#10B981',
+        borderColor: '#10B981',
+    },
+    chipText: {
+        fontSize: 12,
+        color: colors.textSecondary,
+        fontWeight: '500',
+    },
+    chipTextActive: {
+        color: colors.background,
+        fontWeight: '700',
+    },
+
+    startBtn: {
+        backgroundColor: '#10B981',
+        padding: 16,
+        borderRadius: 14,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 8,
+        marginBottom: 40,
+        elevation: 4,
+        shadowColor: '#10B981',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+    },
+    startBtnText: {
+        color: colors.background,
+        fontWeight: '800',
+        fontSize: 16,
+    },
+});

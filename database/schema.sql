@@ -1,0 +1,27 @@
+-- CricV PostgreSQL Database Schema Initializer
+-- Target: PostgreSQL 14+ / Aiven PostgreSQL
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. TEAMS TABLE
+CREATE TABLE IF NOT EXISTS teams (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    short_name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. PLAYERS TABLE
+CREATE TABLE IF NOT EXISTS players (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    role VARCHAR(100) NOT NULL,
+    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- INDEXES FOR FAST QUERY PERFORMANCE
+CREATE INDEX IF NOT EXISTS idx_players_team_id ON players(team_id);
+CREATE INDEX IF NOT EXISTS idx_teams_short_name ON teams(short_name);

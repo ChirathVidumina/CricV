@@ -1,0 +1,42 @@
+{
+  "name": "cricscore-app",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@expo/metro-runtime": "~57.0.8",
+    "@expo/vector-icons": "^15.1.1",
+    "@prisma/client": "^5.22.0",
+    "@react-navigation/bottom-tabs": "^7.18.11",
+    "@react-navigation/native": "^7.3.11",
+    "expo": "~57.0.7",
+    "expo-constants": "~57.0.9",
+    "expo-linking": "^57.0.3",
+    "expo-router": "~57.0.11",
+    "expo-status-bar": "~57.0.1",
+    "prisma": "^5.22.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.0",
+    "react-native-safe-area-context": "^5.8.0",
+    "react-native-screens": "^4.26.2",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@expo/ngrok": "^4.1.3",
+    "@expo/metro-config": "~57.0.6",
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "build": "cd backend && npm install && npx prisma generate && npm run build",
+    "build:web": "expo export -p web",
+    "start": "node backend/dist/main.js || node backend/dist/src/main.js",
+    "start:expo": "expo start",
+    "start:backend": "cd backend && npm run start:dev",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "app": "expo start --android"
+  },
+  "private": true
+}
