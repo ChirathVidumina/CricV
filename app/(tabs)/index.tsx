@@ -55,38 +55,38 @@ export default function HomeScreen({ onStartNewMatch, navigation }: HomeScreenPr
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 16,
-        paddingBottom: 12,
+        paddingHorizontal: 16,
+        paddingTop: 10,
+        paddingBottom: 8,
         borderBottomWidth: 1,
         borderBottomColor: colors.divider,
       }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <View style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
+            width: 34,
+            height: 34,
+            borderRadius: 10,
             backgroundColor: colors.accentBg,
             justifyContent: 'center',
             alignItems: 'center',
             borderWidth: 1,
             borderColor: colors.accentBorder,
           }}>
-            <Ionicons name="baseball" size={20} color={colors.accent} />
+            <Ionicons name="baseball" size={18} color={colors.accent} />
           </View>
           <View>
-            <Text style={{ fontSize: 22, fontWeight: '800', color: colors.textPrimary, letterSpacing: 0.5 }}>CricV</Text>
-            <Text style={{ fontSize: 11, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Cricket Scoring</Text>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: colors.textPrimary, letterSpacing: 0.5 }}>CricV</Text>
+            <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Cricket Scoring</Text>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           {/* Theme Toggle */}
           <TouchableOpacity
             onPress={toggleTheme}
             style={{
-              width: 38,
-              height: 38,
-              borderRadius: 12,
+              width: 34,
+              height: 34,
+              borderRadius: 10,
               backgroundColor: colors.card,
               justifyContent: 'center',
               alignItems: 'center',
@@ -94,82 +94,85 @@ export default function HomeScreen({ onStartNewMatch, navigation }: HomeScreenPr
               borderColor: colors.cardBorder,
             }}
           >
-            <Ionicons name={isDark ? 'sunny-outline' : 'moon-outline'} size={20} color={isDark ? colors.accentAmber : colors.accentPurple} />
+            <Ionicons name={isDark ? 'sunny-outline' : 'moon-outline'} size={18} color={isDark ? colors.accentAmber : colors.accentPurple} />
           </TouchableOpacity>
           <TouchableOpacity style={{
-            width: 38,
-            height: 38,
-            borderRadius: 12,
+            width: 34,
+            height: 34,
+            borderRadius: 10,
             backgroundColor: colors.card,
             justifyContent: 'center',
             alignItems: 'center',
             borderWidth: 1,
             borderColor: colors.cardBorder,
           }}>
-            <Ionicons name="notifications-outline" size={20} color={colors.textSecondary} />
+            <Ionicons name="notifications-outline" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 16 }} showsVerticalScrollIndicator={false}>
         {/* Welcome Section */}
-        <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 24, fontWeight: '700', color: colors.textPrimary, marginBottom: 4 }}>Welcome Back! 👋</Text>
-          <Text style={{ fontSize: 14, color: colors.textMuted }}>Ready to score your next match?</Text>
+        <View style={{ marginBottom: 10 }}>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: colors.textPrimary, marginBottom: 2 }}>Welcome Back! 👋</Text>
+          <Text style={{ fontSize: 12, color: colors.textMuted }}>Ready to score your next match?</Text>
         </View>
 
         {/* Quick Stats Row */}
-        <View style={{ flexDirection: 'row', gap: 12, marginBottom: 28 }}>
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
           <View style={{
             flex: 1,
             backgroundColor: colors.card,
-            borderRadius: 14,
-            padding: 14,
+            borderRadius: 12,
+            paddingVertical: 8,
+            paddingHorizontal: 6,
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             borderWidth: 1,
             borderColor: colors.cardBorder,
           }}>
-            <Ionicons name="baseball-outline" size={18} color={colors.accent} />
-            <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary }}>0</Text>
-            <Text style={{ fontSize: 11, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Matches</Text>
+            <Ionicons name="baseball-outline" size={15} color={colors.accent} />
+            <Text style={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>0</Text>
+            <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Matches</Text>
           </View>
           <View style={{
             flex: 1,
             backgroundColor: colors.card,
-            borderRadius: 14,
-            padding: 14,
+            borderRadius: 12,
+            paddingVertical: 8,
+            paddingHorizontal: 6,
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             borderWidth: 1,
             borderColor: colors.cardBorder,
           }}>
-            <Ionicons name="trophy-outline" size={18} color={colors.accentAmber} />
-            <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary }}>0</Text>
-            <Text style={{ fontSize: 11, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Wins</Text>
+            <Ionicons name="trophy-outline" size={15} color={colors.accentAmber} />
+            <Text style={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>0</Text>
+            <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Wins</Text>
           </View>
           <View style={{
             flex: 1,
             backgroundColor: colors.card,
-            borderRadius: 14,
-            padding: 14,
+            borderRadius: 12,
+            paddingVertical: 8,
+            paddingHorizontal: 6,
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             borderWidth: 1,
             borderColor: colors.cardBorder,
           }}>
-            <Ionicons name="ribbon-outline" size={18} color={colors.accentPurple} />
-            <Text style={{ fontSize: 20, fontWeight: '800', color: colors.textPrimary }}>—</Text>
-            <Text style={{ fontSize: 11, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Highest</Text>
+            <Ionicons name="ribbon-outline" size={15} color={colors.accentPurple} />
+            <Text style={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>—</Text>
+            <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: '500', letterSpacing: 0.3 }}>Highest</Text>
           </View>
         </View>
 
         {/* Action Cards */}
-        <View style={{ gap: 16 }}>
+        <View style={{ gap: 10 }}>
           {/* Card 1: Start New Match */}
           <TouchableOpacity
             style={{
-              borderRadius: 18,
+              borderRadius: 14,
               backgroundColor: colors.card,
               overflow: 'hidden',
               borderWidth: 1,
@@ -179,45 +182,45 @@ export default function HomeScreen({ onStartNewMatch, navigation }: HomeScreenPr
             onPress={handleStartMatch}
           >
             <View style={{ height: 3, backgroundColor: colors.accent, opacity: 0.8 }} />
-            <View style={{ padding: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <View style={{ padding: 12 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <View style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 14,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
                   backgroundColor: colors.accentBg,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderWidth: 1,
                   borderColor: colors.accentBorder,
                 }}>
-                  <Ionicons name="baseball-outline" size={28} color={colors.accent} />
+                  <Ionicons name="baseball-outline" size={20} color={colors.accent} />
                 </View>
                 <View style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   backgroundColor: colors.accentBg,
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderRadius: 20,
-                  gap: 6,
+                  paddingHorizontal: 8,
+                  paddingVertical: 3,
+                  borderRadius: 16,
+                  gap: 4,
                 }}>
-                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent }} />
-                  <Text style={{ color: colors.accent, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 }}>NEW MATCH</Text>
+                  <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.accent }} />
+                  <Text style={{ color: colors.accent, fontSize: 9, fontWeight: '700', letterSpacing: 0.8 }}>NEW MATCH</Text>
                 </View>
               </View>
 
-              <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontSize: 20, fontWeight: '700', color: colors.textPrimary, marginBottom: 8 }}>Start New Match</Text>
-                <Text style={{ fontSize: 13, color: colors.textSecondary, lineHeight: 20 }}>
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: colors.textPrimary, marginBottom: 4 }}>Start New Match</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary, lineHeight: 16 }}>
                   Set up teams, overs, custom rules and start live ball-by-ball scoring.
                 </Text>
               </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.divider }}>
-                <Text style={{ fontSize: 15, fontWeight: '600', color: colors.accent }}>Get Started</Text>
-                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colors.accent, justifyContent: 'center', alignItems: 'center' }}>
-                  <Ionicons name="arrow-forward" size={16} color={isDark ? '#0A0E1A' : '#FFFFFF'} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10, borderTopWidth: 1, borderTopColor: colors.divider }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accent }}>Get Started</Text>
+                <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: colors.accent, justifyContent: 'center', alignItems: 'center' }}>
+                  <Ionicons name="arrow-forward" size={14} color={isDark ? '#0A0E1A' : '#FFFFFF'} />
                 </View>
               </View>
             </View>
@@ -226,7 +229,7 @@ export default function HomeScreen({ onStartNewMatch, navigation }: HomeScreenPr
           {/* Card 2: Start New Tournament */}
           <TouchableOpacity
             style={{
-              borderRadius: 18,
+              borderRadius: 14,
               backgroundColor: colors.card,
               overflow: 'hidden',
               borderWidth: 1,
@@ -235,40 +238,40 @@ export default function HomeScreen({ onStartNewMatch, navigation }: HomeScreenPr
             activeOpacity={0.85}
             onPress={handleStartTournament}
           >
-            <View style={{ padding: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <View style={{ padding: 12 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <View style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 14,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
                   backgroundColor: colors.accentAmberBg,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderWidth: 1,
                   borderColor: colors.accentAmberBorder,
                 }}>
-                  <Ionicons name="trophy-outline" size={26} color={colors.accentAmber} />
+                  <Ionicons name="trophy-outline" size={20} color={colors.accentAmber} />
                 </View>
                 <View style={{
                   backgroundColor: colors.accentAmberBg,
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderRadius: 20,
+                  paddingHorizontal: 8,
+                  paddingVertical: 3,
+                  borderRadius: 16,
                 }}>
-                  <Text style={{ color: colors.accentAmber, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 }}>COMING SOON</Text>
+                  <Text style={{ color: colors.accentAmber, fontSize: 9, fontWeight: '700', letterSpacing: 0.8 }}>COMING SOON</Text>
                 </View>
               </View>
 
-              <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontSize: 20, fontWeight: '700', color: colors.textPrimary, marginBottom: 8 }}>Start Tournament</Text>
-                <Text style={{ fontSize: 13, color: colors.textSecondary, lineHeight: 20 }}>
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: colors.textPrimary, marginBottom: 4 }}>Start Tournament</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary, lineHeight: 16 }}>
                   Organize leagues, knockouts, track points table and player leaderboards.
                 </Text>
               </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.divider }}>
-                <Text style={{ fontSize: 15, fontWeight: '600', color: colors.accentAmber }}>Explore</Text>
-                <Ionicons name="chevron-forward" size={18} color={colors.accentAmber} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10, borderTopWidth: 1, borderTopColor: colors.divider }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accentAmber }}>Explore</Text>
+                <Ionicons name="chevron-forward" size={16} color={colors.accentAmber} />
               </View>
             </View>
           </TouchableOpacity>
