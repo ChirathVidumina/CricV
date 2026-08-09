@@ -36,8 +36,8 @@ export default function AdvancedSettingsScreen({
     onClose,
     navigation,
 }: AdvancedSettingsScreenProps) {
-  const { colors, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+    const { colors, isDark } = useTheme();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     const [playersPerTeam, setPlayersPerTeam] = useState(initialValues?.playersPerTeam ?? '11');
     
     const initialPlayersNum = parseInt(initialValues?.playersPerTeam ?? '11', 10);
@@ -240,8 +240,8 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         backgroundColor: colors.background,
     },
     header: {
-        backgroundColor: colors.background,
-        paddingVertical: 16,
+        backgroundColor: colors.card,
+        paddingVertical: 14,
         paddingHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
@@ -263,14 +263,14 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: 16,
         borderWidth: 1,
         borderColor: colors.cardBorder,
-        padding: 20,
-        marginBottom: 20,
+        padding: 16,
+        marginBottom: 16,
     },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 12,
+        paddingVertical: 10,
     },
     label: {
         fontSize: 14,
@@ -317,14 +317,14 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         top: 42,
         right: 0,
         width: 76,
-        backgroundColor: '#0F172A',
+        backgroundColor: colors.card,
         borderWidth: 1,
         borderColor: colors.cardBorder,
         borderRadius: 10,
         elevation: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.2,
         shadowRadius: 8,
         zIndex: 1000,
         overflow: 'hidden',
@@ -339,52 +339,52 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         backgroundColor: '#10B981',
     },
     anchoredOptionUnselected: {
-        backgroundColor: '#0F172A',
+        backgroundColor: colors.card,
     },
     anchoredOptionBorder: {
         borderBottomWidth: 1,
-        borderColor: colors.cardBorder,
+        borderColor: colors.divider,
     },
     anchoredOptionText: {
         fontSize: 14,
         textAlign: 'center',
     },
     anchoredOptionTextSelected: {
-        color: colors.background,
+        color: '#FFFFFF',
         fontWeight: '800',
     },
     anchoredOptionTextUnselected: {
-        color: colors.textSecondary,
+        color: colors.textPrimary,
         fontWeight: '600',
     },
     divider: {
         height: 1,
-        backgroundColor: colors.card,
-        marginVertical: 14,
+        backgroundColor: colors.divider,
+        marginVertical: 12,
     },
     sectionTitle: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '700',
         color: '#10B981',
         marginTop: 4,
-        marginBottom: 8,
+        marginBottom: 6,
         letterSpacing: 0.5,
     },
     saveBtn: {
         backgroundColor: '#10B981',
-        borderRadius: 14,
-        paddingVertical: 16,
+        borderRadius: 12,
+        paddingVertical: 14,
         alignItems: 'center',
         justifyContent: 'center',
-        elevation: 4,
+        elevation: 3,
         shadowColor: '#10B981',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.25,
+        shadowRadius: 6,
     },
     saveBtnText: {
-        color: colors.background,
-        fontSize: 16,
+        color: '#FFFFFF',
+        fontSize: 15,
         fontWeight: '800',
     },
 });
