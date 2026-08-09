@@ -1,0 +1,18 @@
+services:
+  # Static Site for Expo Web Frontend
+  - type: web
+    name: cricscore-web
+    env: static
+    buildCommand: npm run build:web
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # Node Service for NestJS Backend (if deploying backend on Render)
+  - type: web
+    name: cricscore-backend
+    env: node
+    buildCommand: cd backend && npm install && npx prisma generate && npm run build
+    startCommand: cd backend && npm run start:prod

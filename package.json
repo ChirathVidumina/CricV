@@ -28,6 +28,7 @@
   "scripts": {
     "build": "cd backend && npm install && npx prisma generate && npm run build",
     "build:web": "expo export -p web",
+    "build:all": "npm run build && npm run build:web",
     "start": "node backend/dist/main.js || node backend/dist/src/main.js",
     "start:expo": "expo start",
     "start:backend": "cd backend && npm run start:dev",
