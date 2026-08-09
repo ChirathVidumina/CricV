@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -9,7 +9,9 @@ import {
     StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme, ThemeColors } from './ThemeContext';
+import { PLAYER_PROFILE_STORAGE_KEY } from './PlayerProfileScreen';
 
 interface MyProfileScreenProps {
     profileData?: any;
@@ -22,18 +24,41 @@ export default function MyProfileScreen({
     onEditProfile,
     navigation,
 }: MyProfileScreenProps) {
-  const { colors, isDark } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+    const { colors, isDark } = useTheme();
+    const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const StatCard = ({ label, value }: { label: string; value: string | number }) => (
-    <View style={styles.statCard}>
-        <Text style={styles.statLabel} numberOfLines={1}>{label}</Text>
-        <Text style={styles.statValue}>{value}</Text>
-    </View>
-  );
-
+    const [storedProfile, setStoredProfile] = useState<any>(profileData || null);
     const [activeTab, setActiveTab] = useState<'Overview' | 'Stats' | 'Matches'>('Overview');
     const [statsCategory, setStatsCategory] = useState<'Batting' | 'Bowling' | 'Fielding'>('Batting');
+
+    // Load saved profile data from AsyncStorage on mount and sync with props
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const data = await AsyncStorage.getItem(PLAYER_PROFILE_STORAGE_KEY);
+                if (data) {
+                    setStoredProfile(JSON.parse(data));
+                }
+            } catch (err) {
+                console.error('Failed to load profile in MyProfileScreen:', err);
+            }
+        };
+
+        if (profileData) {
+            setStoredProfile(profileData);
+        } else {
+            loadProfile();
+        }
+    }, [profileData]);
+
+    const effectiveData = profileData || storedProfile;
+
+    const StatCard = ({ label, value }: { label: string; value: string | number }) => (
+        <View style={styles.statCard}>
+            <Text style={styles.statLabel} numberOfLines={1}>{label}</Text>
+            <Text style={styles.statValue}>{value}</Text>
+        </View>
+    );
 
     const handleEdit = () => {
         if (onEditProfile) {
@@ -45,40 +70,40 @@ export default function MyProfileScreen({
 
     // Helper to format concise role subtitle e.g. "Batter • RHB • RAOB"
     const getRoleSubtitle = () => {
-        const role = profileData?.playingRole || 'Batter';
-        
+        const role = effectiveData?.playingRole || 'Batter';
+
         let batAbbr = 'RHB';
-        if (profileData?.battingHand === 'Left Handed' || profileData?.battingStyle === 'Left Handed') {
+        if (effectiveData?.battingHand === 'Left Handed' || effectiveData?.battingStyle === 'Left Handed') {
             batAbbr = 'LHB';
         }
 
         let bowlAbbr = 'None';
-        const category = profileData?.bowlingCategory || profileData?.bowlingStyle;
+        const category = effectiveData?.bowlingCategory || effectiveData?.bowlingStyle;
         if (category === 'Fast' || category === 'Medium Fast') {
-            const arm = profileData?.bowlingArm === 'Left Arm' ? 'LAF' : 'RAF';
+            const arm = effectiveData?.bowlingArm === 'Left Arm' ? 'LAF' : 'RAF';
             bowlAbbr = category === 'Fast' ? arm : `${arm}M`;
         } else if (category === 'Spin' || category === 'Spinner') {
-            if (profileData?.spinType?.includes('Leg')) bowlAbbr = 'RALB';
-            else if (profileData?.spinType?.includes('Chinaman')) bowlAbbr = 'LACB';
-            else if (profileData?.spinType?.includes('Orthodox')) bowlAbbr = 'SLA';
+            if (effectiveData?.spinType?.includes('Leg')) bowlAbbr = 'RALB';
+            else if (effectiveData?.spinType?.includes('Chinaman')) bowlAbbr = 'LACB';
+            else if (effectiveData?.spinType?.includes('Orthodox')) bowlAbbr = 'SLA';
             else bowlAbbr = 'RAOB';
         }
 
         return `${role} • ${batAbbr} • ${bowlAbbr}`;
     };
 
-    const displayName = profileData?.displayName || profileData?.fullName || 'CricV Player';
+    const displayName = effectiveData?.displayName || effectiveData?.fullName || 'Player';
 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle={colors.statusBar} backgroundColor={colors.background} />
 
-            {/* Top Header Section (CricV Blue Theme) */}
+            {/* Top Header Section */}
             <View style={styles.topHeaderCard}>
                 {/* Header Edit Action */}
                 <View style={styles.topActionRow}>
                     <TouchableOpacity onPress={handleEdit} style={styles.editBadgeBtn}>
-                        <Ionicons name="create-outline" size={18} color="white" />
+                        <Ionicons name="create-outline" size={16} color="#10B981" />
                         <Text style={styles.editBadgeText}>Edit Profile</Text>
                     </TouchableOpacity>
                 </View>
@@ -126,9 +151,9 @@ export default function MyProfileScreen({
                         <View style={styles.gridRowFull}>
                             <View style={styles.labelHeader}>
                                 <Ionicons name="person-outline" size={16} color="#2563EB" style={{ marginRight: 6 }} />
-                                <Text style={styles.labelText}>Full Name</Text>
+                                <Text style={styles.labelText}>FULL NAME</Text>
                             </View>
-                            <Text style={styles.valueText}>{profileData?.fullName || 'Not specified'}</Text>
+                            <Text style={styles.valueText}>{effectiveData?.fullName || 'Player'}</Text>
                         </View>
 
                         <View style={styles.divider} />
@@ -138,22 +163,22 @@ export default function MyProfileScreen({
                             <View style={styles.gridCol}>
                                 <View style={styles.labelHeader}>
                                     <Ionicons name="fitness-outline" size={16} color="#2563EB" style={{ marginRight: 6 }} />
-                                    <Text style={styles.labelText}>Batting Style</Text>
+                                    <Text style={styles.labelText}>BATTING STYLE</Text>
                                 </View>
                                 <Text style={styles.valueText}>
-                                    {profileData?.battingHand || profileData?.battingStyle || 'Right Handed'}
+                                    {effectiveData?.battingHand || effectiveData?.battingStyle || 'Right Handed'}
                                 </Text>
                             </View>
 
                             <View style={styles.gridCol}>
                                 <View style={styles.labelHeader}>
                                     <Ionicons name="sparkles-outline" size={16} color="#2563EB" style={{ marginRight: 6 }} />
-                                    <Text style={styles.labelText}>Bowling Style</Text>
+                                    <Text style={styles.labelText}>BOWLING STYLE</Text>
                                 </View>
                                 <Text style={styles.valueText}>
-                                    {profileData?.bowlingCategory || profileData?.bowlingStyle || 'None'}
-                                    {profileData?.bowlingArm ? ` (${profileData.bowlingArm})` : ''}
-                                    {profileData?.spinType ? ` (${profileData.spinType})` : ''}
+                                    {effectiveData?.bowlingCategory || effectiveData?.bowlingStyle || 'None'}
+                                    {effectiveData?.bowlingArm ? ` (${effectiveData.bowlingArm})` : ''}
+                                    {effectiveData?.spinType ? ` (${effectiveData.spinType})` : ''}
                                 </Text>
                             </View>
                         </View>
@@ -165,17 +190,17 @@ export default function MyProfileScreen({
                             <View style={styles.gridCol}>
                                 <View style={styles.labelHeader}>
                                     <Ionicons name="ribbon-outline" size={16} color="#2563EB" style={{ marginRight: 6 }} />
-                                    <Text style={styles.labelText}>Player Role</Text>
+                                    <Text style={styles.labelText}>PLAYER ROLE</Text>
                                 </View>
-                                <Text style={styles.valueText}>{profileData?.playingRole || 'Batter'}</Text>
+                                <Text style={styles.valueText}>{effectiveData?.playingRole || 'Batter'}</Text>
                             </View>
 
                             <View style={styles.gridCol}>
                                 <View style={styles.labelHeader}>
                                     <Ionicons name="shirt-outline" size={16} color="#2563EB" style={{ marginRight: 6 }} />
-                                    <Text style={styles.labelText}>Current Team</Text>
+                                    <Text style={styles.labelText}>CURRENT TEAM</Text>
                                 </View>
-                                <Text style={styles.valueText}>{profileData?.currentTeam || 'None'}</Text>
+                                <Text style={styles.valueText}>{effectiveData?.currentTeam || 'None'}</Text>
                             </View>
                         </View>
 
@@ -185,9 +210,9 @@ export default function MyProfileScreen({
                         <View style={styles.gridRowFull}>
                             <View style={styles.labelHeader}>
                                 <Ionicons name="time-outline" size={16} color="#2563EB" style={{ marginRight: 6 }} />
-                                <Text style={styles.labelText}>Previous Teams</Text>
+                                <Text style={styles.labelText}>PREVIOUS TEAMS</Text>
                             </View>
-                            <Text style={styles.valueText}>{profileData?.previousTeams || 'None'}</Text>
+                            <Text style={styles.valueText}>{effectiveData?.previousTeams || 'None'}</Text>
                         </View>
                     </View>
                 )}
@@ -415,7 +440,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     },
     divider: {
         height: 1,
-        backgroundColor: colors.card,
+        backgroundColor: colors.cardBorder,
         marginVertical: 14,
     },
     emptyStateCard: {

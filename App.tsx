@@ -22,7 +22,7 @@ import { ThemeProvider, useTheme } from './src/ThemeContext';
 
 function ProfileFlow({ navigation }: any) {
   const { colors } = useTheme();
-  const [currentView, setCurrentView] = useState<'view-profile' | 'view-stats'>('view-profile');
+  const [currentView, setCurrentView] = useState<'view-profile' | 'view-stats'>('view-stats');
   const [profileData, setProfileData] = useState<any>(null);
 
   const handleSaveProfile = (data: any) => {
