@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     SafeAreaView,
     View,
@@ -12,8 +12,10 @@ import {
     LayoutChangeEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme, ThemeColors } from './ThemeContext';
 import AutocompleteInput from './AutocompleteInput';
+import { PLAYER_PROFILE_STORAGE_KEY } from './PlayerProfileScreen';
 
 interface SquadSelectionScreenProps {
     battingTeam: string;
@@ -51,6 +53,44 @@ export default function SquadSelectionScreen({
 
     const [battingSquad, setBattingSquad] = useState<string[]>(Array(targetSize).fill(''));
     const [bowlingSquad, setBowlingSquad] = useState<string[]>(Array(targetSize).fill(''));
+    const [userProfile, setUserProfile] = useState<{ fullName: string; displayName?: string } | null>(null);
+
+    // Fetch saved personal profile from AsyncStorage to add to Autocomplete suggestions
+    useEffect(() => {
+        const loadUserProfile = async () => {
+            try {
+                const raw = await AsyncStorage.getItem(PLAYER_PROFILE_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.fullName || parsed.displayName) {
+                        setUserProfile({
+                            fullName: parsed.fullName || 'Player',
+                            displayName: parsed.displayName,
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load user profile for suggestions:', err);
+            }
+        };
+        loadUserProfile();
+    }, []);
+
+    const battingSuggestions = useMemo(() => {
+        const list: Array<string | { fullName: string; displayName?: string }> = [...DEFAULT_BATTING_SQUAD];
+        if (userProfile) {
+            list.unshift(userProfile);
+        }
+        return list;
+    }, [userProfile]);
+
+    const bowlingSuggestions = useMemo(() => {
+        const list: Array<string | { fullName: string; displayName?: string }> = [...DEFAULT_BOWLING_SQUAD];
+        if (userProfile) {
+            list.unshift(userProfile);
+        }
+        return list;
+    }, [userProfile]);
 
     // Animated values for sliding tab background and list transitions
     const [tabBarWidth, setTabBarWidth] = useState<number>(0);
@@ -294,7 +334,7 @@ export default function SquadSelectionScreen({
                                     placeholder={`Player ${idx + 1}`}
                                     value={player}
                                     onChangeText={(val) => handlePlayerChange(activeTeamTab, idx, val)}
-                                    suggestions={activeTeamTab === 'batting' ? DEFAULT_BATTING_SQUAD : DEFAULT_BOWLING_SQUAD}
+                                    suggestions={activeTeamTab === 'batting' ? battingSuggestions : bowlingSuggestions}
                                 />
                                 {currentSquad.length > 2 && (
                                     <TouchableOpacity

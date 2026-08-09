@@ -1,8 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme, ThemeColors } from './ThemeContext';
 import AutocompleteInput from './AutocompleteInput';
+import { PLAYER_PROFILE_STORAGE_KEY } from './PlayerProfileScreen';
 
 interface OpeningPlayersScreenProps {
     battingTeam: string;
@@ -23,9 +25,48 @@ export default function OpeningPlayersScreen({
 }: OpeningPlayersScreenProps) {
     const { colors, isDark } = useTheme();
     const styles = useMemo(() => createStyles(colors), [colors]);
+
     const [strikerName, setStrikerName] = useState(battingSquad[0] || '');
     const [nonStrikerName, setNonStrikerName] = useState(battingSquad[1] || '');
     const [bowlerName, setBowlerName] = useState(bowlingSquad[0] || '');
+    const [userProfile, setUserProfile] = useState<{ fullName: string; displayName?: string } | null>(null);
+
+    // Fetch saved personal profile from AsyncStorage to add to Autocomplete suggestions
+    useEffect(() => {
+        const loadUserProfile = async () => {
+            try {
+                const raw = await AsyncStorage.getItem(PLAYER_PROFILE_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.fullName || parsed.displayName) {
+                        setUserProfile({
+                            fullName: parsed.fullName || 'Player',
+                            displayName: parsed.displayName,
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load user profile for suggestions:', err);
+            }
+        };
+        loadUserProfile();
+    }, []);
+
+    const battingSuggestions = useMemo(() => {
+        const list: Array<string | { fullName: string; displayName?: string }> = [...battingSquad];
+        if (userProfile) {
+            list.unshift(userProfile);
+        }
+        return list;
+    }, [battingSquad, userProfile]);
+
+    const bowlingSuggestions = useMemo(() => {
+        const list: Array<string | { fullName: string; displayName?: string }> = [...bowlingSquad];
+        if (userProfile) {
+            list.unshift(userProfile);
+        }
+        return list;
+    }, [bowlingSquad, userProfile]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -55,7 +96,7 @@ export default function OpeningPlayersScreen({
                         placeholder="Enter striker name"
                         value={strikerName}
                         onChangeText={setStrikerName}
-                        suggestions={battingSquad}
+                        suggestions={battingSuggestions}
                     />
 
                     {battingSquad.length > 0 && (
@@ -82,7 +123,7 @@ export default function OpeningPlayersScreen({
                         placeholder="Enter non-striker name"
                         value={nonStrikerName}
                         onChangeText={setNonStrikerName}
-                        suggestions={battingSquad}
+                        suggestions={battingSuggestions}
                     />
 
                     {battingSquad.length > 0 && (
@@ -114,7 +155,7 @@ export default function OpeningPlayersScreen({
                         placeholder="Enter bowler name"
                         value={bowlerName}
                         onChangeText={setBowlerName}
-                        suggestions={bowlingSquad}
+                        suggestions={bowlingSuggestions}
                     />
 
                     {bowlingSquad.length > 0 && (
