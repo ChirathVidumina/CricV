@@ -9,8 +9,7 @@
     "src/**/*",
     "components/**/*",
     "app/**/*",
-    "App.tsx",
-    "index.ts"
+    "App.tsx"
   ],
   "exclude": [
     "backend",

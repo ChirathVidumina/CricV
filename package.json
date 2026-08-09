@@ -1,13 +1,11 @@
 {
   "name": "cricscore-app",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "expo-router/entry",
   "dependencies": {
     "@expo/metro-runtime": "~57.0.8",
     "@expo/vector-icons": "^15.1.1",
     "@prisma/client": "^5.22.0",
-    "@react-navigation/bottom-tabs": "^7.18.11",
-    "@react-navigation/native": "^7.3.11",
     "expo": "~57.0.7",
     "expo-constants": "~57.0.9",
     "expo-linking": "^57.0.3",

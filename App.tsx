@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, StatusBar, View, Platform } from 'react-native';
+import React, { useState, useLayoutEffect } from 'react';
+import { SafeAreaView, StyleSheet, StatusBar, View, Platform, TouchableOpacity, Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from './app/(tabs)/index';
@@ -21,8 +19,6 @@ import TeamPlayerProfileScreen from './src/TeamPlayerProfileScreen';
 
 import { AppSettings, ViewState } from './src/types';
 import { ThemeProvider, useTheme } from './src/ThemeContext';
-
-const Tab = createBottomTabNavigator();
 
 function ProfileFlow({ navigation }: any) {
   const { colors } = useTheme();
@@ -59,24 +55,17 @@ function ScoringFlow({ navigation }: any) {
   const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
   const [activePlayers, setActivePlayers] = useState<any>(null);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (currentView !== 'view-home') {
       navigation?.setOptions({ tabBarStyle: { display: 'none' } });
     } else {
       navigation?.setOptions({
         tabBarStyle: {
-          height: 70,
-          paddingBottom: 10,
-          paddingTop: 8,
-          backgroundColor: colors.tabBarBg,
-          borderTopWidth: 1,
-          borderTopColor: colors.tabBarBorder,
-          elevation: 0,
-          shadowOpacity: 0,
+          display: 'flex',
         },
       });
     }
-  }, [navigation, currentView, colors]);
+  }, [navigation, currentView]);
 
   const handleStartMatch = (settings: AppSettings) => {
     setAppSettings(settings);
@@ -163,55 +152,111 @@ function ScoringFlow({ navigation }: any) {
   );
 }
 
+type TabKey = 'Home' | 'Teams' | 'History' | 'Stats';
+
 function AppContent() {
   const { colors } = useTheme();
   const isWeb = Platform.OS === 'web';
+  const [activeTab, setActiveTab] = useState<TabKey>('Home');
+  const [isTabBarHidden, setIsTabBarHidden] = useState(false);
+
+  const navigation = {
+    navigate: (tabName: string) => {
+      if (tabName === 'Home') setActiveTab('Home');
+      else if (tabName === 'Teams' || tabName === 'Teams & Tournaments') setActiveTab('Teams');
+      else if (tabName === 'History') setActiveTab('History');
+      else if (tabName === 'My Stats' || tabName === 'Stats') setActiveTab('Stats');
+    },
+    reset: () => {
+      setActiveTab('Home');
+    },
+    goBack: () => {
+      // safe fallback
+    },
+    setOptions: (opts: any) => {
+      if (opts?.tabBarStyle?.display === 'none') {
+        setIsTabBarHidden(true);
+      } else {
+        setIsTabBarHidden(false);
+      }
+    },
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'Home':
+        return <ScoringFlow navigation={navigation} />;
+      case 'Teams':
+        return <TeamsScreen navigation={navigation} />;
+      case 'History':
+        return <HistoryScreen navigation={navigation} />;
+      case 'Stats':
+        return <ProfileFlow navigation={navigation} />;
+      default:
+        return <ScoringFlow navigation={navigation} />;
+    }
+  };
+
+  const tabItems = [
+    { key: 'Home' as TabKey, label: 'Home', activeIcon: 'home', inactiveIcon: 'home-outline' },
+    { key: 'Teams' as TabKey, label: 'Teams & Tournaments', activeIcon: 'people', inactiveIcon: 'people-outline' },
+    { key: 'History' as TabKey, label: 'History', activeIcon: 'time', inactiveIcon: 'time-outline' },
+    { key: 'Stats' as TabKey, label: 'My Stats', activeIcon: 'person', inactiveIcon: 'person-outline' },
+  ];
 
   const mainContent = (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: any = 'help-outline';
-
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Teams' || route.name === 'Teams & Tournaments') {
-              iconName = focused ? 'people' : 'people-outline';
-            } else if (route.name === 'History') {
-              iconName = focused ? 'time' : 'time-outline';
-            } else if (route.name === 'My Stats') {
-              iconName = focused ? 'person' : 'person-outline';
-            }
-
-            return <Ionicons name={iconName} size={22} color={color} />;
-          },
-          tabBarActiveTintColor: colors.accent,
-          tabBarInactiveTintColor: colors.tabBarInactive,
-          headerShown: false,
-          tabBarStyle: {
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ flex: 1 }}>
+        {renderTabContent()}
+      </View>
+      {!isTabBarHidden && (
+        <View
+          style={{
+            flexDirection: 'row',
             height: 70,
             paddingBottom: 10,
             paddingTop: 8,
             backgroundColor: colors.tabBarBg,
             borderTopWidth: 1,
             borderTopColor: colors.tabBarBorder,
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-          tabBarLabelStyle: {
-            fontSize: 11,
-            fontWeight: '600',
-            letterSpacing: 0.3,
-          },
-        })}
-      >
-        <Tab.Screen name="Home" component={ScoringFlow} />
-        <Tab.Screen name="Teams & Tournaments" component={TeamsScreen} />
-        <Tab.Screen name="History" component={HistoryScreen} />
-        <Tab.Screen name="My Stats" component={ProfileFlow} />
-      </Tab.Navigator>
-    </NavigationContainer>
+          }}
+        >
+          {tabItems.map((tab) => {
+            const isFocused = activeTab === tab.key;
+            const color = isFocused ? colors.accent : colors.tabBarInactive;
+            return (
+              <TouchableOpacity
+                key={tab.key}
+                onPress={() => setActiveTab(tab.key)}
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={isFocused ? (tab.activeIcon as any) : (tab.inactiveIcon as any)}
+                  size={22}
+                  color={color}
+                />
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: '600',
+                    letterSpacing: 0.3,
+                    color: color,
+                    marginTop: 3,
+                  }}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+    </View>
   );
 
   return (
