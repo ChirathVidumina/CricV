@@ -1,0 +1,35 @@
+// Prisma Schema for CricV PostgreSQL Database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Team Model
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+  shortName String
+  players   Player[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teams")
+}
+
+// Player Model
+model Player {
+  id        String   @id @default(uuid())
+  name      String
+  role      String
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("players")
+}
