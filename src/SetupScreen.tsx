@@ -3,7 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, SafeAr
 import { Ionicons } from '@expo/vector-icons';
 import AdvancedSettingsScreen from './AdvancedSettingsScreen';
 import { AppSettings } from './types';
-import { loadFinalOverThriller } from './mockData';
 import { useTheme } from './ThemeContext';
 
 export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (settings: AppSettings) => void; onBack?: () => void }) {
@@ -64,175 +63,6 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
             wdReball: wdReball,
             wdRuns: parseInt(wdRuns) || 1,
             playersPerTeam: parseInt(playersPerTeam) || 11,
-        });
-    };
-
-    const handleLoadTest = () => {
-        const scenario = loadFinalOverThriller();
-        
-        const firstInningsScorecard = {
-            id: 'inn-1',
-            teamName: scenario.firstInnings.battingTeam,
-            totalScore: `${scenario.firstInnings.currentScore}/${scenario.firstInnings.wickets}`,
-            overs: `(${scenario.firstInnings.oversCompleted.toFixed(1)})`,
-            extras: `${scenario.firstInnings.extras.total} (b ${scenario.firstInnings.extras.byes}, lb ${scenario.firstInnings.extras.legByes}, w ${scenario.firstInnings.extras.wides}, nb ${scenario.firstInnings.extras.noBalls})`,
-            batters: scenario.firstInnings.batters.map(b => ({
-                id: `b1-${b.id}`,
-                name: b.name,
-                dismissal: b.status,
-                runs: b.runs,
-                balls: b.balls,
-                fours: b.fours,
-                sixes: b.sixes,
-                strikeRate: b.sr.toFixed(2),
-                isNotOut: b.status === 'not out',
-                didNotBat: false,
-            })),
-            bowlers: scenario.firstInnings.bowlers.map(bw => ({
-                id: `bw1-${bw.id}`,
-                name: bw.name,
-                overs: bw.overs.toFixed(1),
-                maidens: bw.maidens,
-                runs: bw.runs,
-                wickets: bw.wickets,
-                economy: bw.econ.toFixed(2),
-            })),
-            fow: scenario.firstInnings.fow.map(f => ({
-                id: `fw1-${f.wicket}`,
-                wicketNumber: f.wicket,
-                player: f.player,
-                score: `${f.score}/${f.wicket}`,
-                overs: f.over,
-            })),
-        };
-
-        const parseHistoricalBall = (bStr: string, bowlerName: string, strikerName: string) => {
-            let circleText = bStr;
-            let subText: string | undefined = undefined;
-            let isWicket = bStr === 'W';
-            let runs = 0;
-
-            const upper = bStr.toUpperCase();
-            if (bStr === 'W') {
-                circleText = 'W';
-                runs = 0;
-            } else if (upper.startsWith('WD') || upper === 'WD') {
-                circleText = '0';
-                subText = 'WD';
-                runs = 1;
-            } else if (upper.includes('NB')) {
-                const num = upper.replace(/[^0-9]/g, '');
-                circleText = num ? num : '1';
-                subText = 'NB';
-                runs = (parseInt(num) || 1) + 1;
-            } else if (upper.startsWith('LB')) {
-                const num = upper.replace(/[^0-9]/g, '');
-                circleText = num ? num : '1';
-                subText = 'LB';
-                runs = parseInt(num) || 1;
-            } else if (upper.startsWith('BYE')) {
-                const num = upper.replace(/[^0-9]/g, '');
-                circleText = num ? num : '1';
-                subText = 'BYE';
-                runs = parseInt(num) || 1;
-            } else {
-                const r = parseInt(bStr);
-                runs = !isNaN(r) ? r : 0;
-                circleText = `${runs}`;
-            }
-
-            return { circleText, subText, runs, isWicket, bowlerName, strikerName };
-        };
-
-        const overs1History = scenario.firstInnings.overByOver.map(o => {
-            const bBowler = scenario.firstInnings.bowlers[(o.overNumber - 1) % scenario.firstInnings.bowlers.length].name;
-            const bStriker = scenario.firstInnings.batters[(o.overNumber - 1) % scenario.firstInnings.batters.length].name;
-            const balls = o.balls.map(b => parseHistoricalBall(b, bBowler, bStriker));
-            return {
-                overNumber: o.overNumber,
-                innings: 1,
-                bowlerName: bBowler,
-                battersText: `${bBowler.split(' ')[0]} to ${bStriker.split(' ')[0]}`,
-                totalRuns: o.runs,
-                balls: balls,
-            };
-        });
-
-        const overs2History = scenario.secondInnings.overByOver.map(o => {
-            const bBowler = scenario.secondInnings.bowlers[(o.overNumber - 1) % scenario.secondInnings.bowlers.length].name;
-            const bStriker = o.overNumber >= 15 ? 'Dasun Shanaka' : scenario.secondInnings.batters[(o.overNumber - 1) % 6].name;
-            const balls = o.balls.map(b => parseHistoricalBall(b, bBowler, bStriker));
-            return {
-                overNumber: o.overNumber,
-                innings: 2,
-                bowlerName: bBowler,
-                battersText: `${bBowler.split(' ')[0]} to ${bStriker.split(' ')[0]}`,
-                totalRuns: o.runs,
-                balls: balls,
-            };
-        });
-
-        const strikerBatter = scenario.secondInnings.batters.find(b => b.isStriker) || { name: 'Dasun Shanaka', runs: 45, balls: 20, fours: 3, sixes: 3 };
-        const nonStrikerBatter = scenario.secondInnings.batters.find(b => b.isStriker === false && b.status === 'not out') || { name: 'Chamika Karunaratne', runs: 12, balls: 9, fours: 1, sixes: 0 };
-        const currentBowler = scenario.secondInnings.bowlers.find(bw => bw.isCurrentBowler) || { name: 'Glenn Maxwell', overs: 3.0, maidens: 0, runs: 28, wickets: 0 };
-
-        onStartMatch({
-            battingTeam: scenario.firstInnings.battingTeam,
-            bowlingTeam: scenario.firstInnings.bowlingTeam,
-            tossWinner: 'host',
-            optedTo: 'bat',
-            overs: '20',
-            ballsPerOver: 6,
-            nbReball: true,
-            nbRuns: 1,
-            wdReball: true,
-            wdRuns: 1,
-            battingSquad: scenario.firstInnings.batters.map(b => b.name),
-            bowlingSquad: scenario.secondInnings.batters.map(b => b.name),
-            testState: {
-                currentInnings: scenario.matchInfo.currentInnings,
-                targetScore: scenario.matchInfo.target,
-                runs: scenario.secondInnings.currentScore,
-                wickets: scenario.secondInnings.wickets,
-                totalBalls: Math.round(scenario.secondInnings.oversCompleted * 6),
-                currentOverBalls: [],
-                striker: strikerBatter.name,
-                nonStriker: nonStrikerBatter.name,
-                bowler: currentBowler.name,
-                strikerStats: { name: strikerBatter.name, runs: strikerBatter.runs, balls: strikerBatter.balls, fours: strikerBatter.fours, sixes: strikerBatter.sixes },
-                nonStrikerStats: { name: nonStrikerBatter.name, runs: nonStrikerBatter.runs, balls: nonStrikerBatter.balls, fours: nonStrikerBatter.fours, sixes: nonStrikerBatter.sixes },
-                bowlerStats: { name: currentBowler.name, runs: currentBowler.runs, wickets: currentBowler.wickets, balls: Math.round(currentBowler.overs * 6), maidens: currentBowler.maidens },
-                dismissedBatters: scenario.secondInnings.batters
-                    .filter(b => b.status !== 'not out')
-                    .map(b => ({
-                        name: b.name,
-                        dismissal: b.status,
-                        runs: b.runs,
-                        balls: b.balls,
-                        fours: b.fours,
-                        sixes: b.sixes,
-                        innings: 2,
-                    })),
-                bowlersHistory: scenario.secondInnings.bowlers.map(bw => ({
-                    name: bw.name,
-                    runs: bw.runs,
-                    wickets: bw.wickets,
-                    balls: Math.round(bw.overs * 6),
-                    maidens: bw.maidens,
-                    innings: 2,
-                })),
-                fowList: scenario.secondInnings.fow.map(f => ({
-                    id: `fow-2-${f.wicket}`,
-                    wicketNumber: f.wicket,
-                    player: f.player,
-                    score: `${f.score}/${f.wicket}`,
-                    overs: f.over,
-                    innings: 2,
-                })),
-                allOversHistory: [...overs1History, ...overs2History],
-                firstInningsScorecard,
-                extrasStats: scenario.secondInnings.extras,
-            }
         });
     };
 
@@ -367,12 +197,6 @@ export default function SetupScreen({ onStartMatch, onBack }: { onStartMatch: (s
                         <Text style={{ color: colors.textSecondary, fontWeight: '600', fontSize: 13 }}>Advanced Settings</Text>
                     </View>
                     <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
-                </TouchableOpacity>
-
-                {/* Load Test Scenario */}
-                <TouchableOpacity style={{ backgroundColor: colors.accentPurpleBg, borderWidth: 1, borderColor: colors.accentPurpleBorder, padding: 10, borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }} onPress={handleLoadTest}>
-                    <Ionicons name="flask-outline" size={16} color={colors.accentPurple} style={{ marginRight: 6 }} />
-                    <Text style={{ color: '#A78BFA', fontWeight: '600', fontSize: 13 }}>Load Test Scenario (Last Over)</Text>
                 </TouchableOpacity>
 
                 {/* Start Match */}
